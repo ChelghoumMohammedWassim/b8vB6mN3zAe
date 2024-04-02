@@ -4,15 +4,16 @@ using System.Text;
 using b8vB6mN3zAe.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace InsuranceAPI.Tools
+namespace b8vB6mN3zAe.Tools
 {
     public static class Token
     {
-        public static string CreateToken( User user, string tokenKey)
+        public static string CreateToken(User user, string tokenKey)
         {
             List<Claim> claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.UserName)
+            new Claim("ID", user.ID),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
@@ -44,7 +45,7 @@ namespace InsuranceAPI.Tools
                 SecurityToken securityToken;
                 var claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
 
-                var nameClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+                var nameClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "ID");
 
                 return nameClaim?.Value;
             }

@@ -2,7 +2,7 @@ namespace b8vB6mN3zAe.Models.Enums
 {
     public enum City
     {
-        Adrar,
+        Adrar=1,
         Chlef,
         Laghouat,
         Oum_El_Bouaghi,

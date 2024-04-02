@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "cXnDlTeJs9Wa5b7kEy2JBvYVkWhBQjkKNk45tQPCOL2+h4GauR+GSW8P8Kv9nyzp6hhmTiTRKJxljOUm4r3bYw==",
+  "dgSpecHash": "7DXhBYGoxR2SKeJ8LsET1MnbB4NEirZh+IQRMZP7a2zDNVheCctlpgB2XQgmJL2oOIkqGi++S25Drq0jsOHC9Q==",
   "success": true,
   "projectFilePath": "E:\\My-Projects\\API\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj",
   "expectedPackageFiles": [
@@ -62,7 +62,7 @@
     "C:\\Users\\ch\\.nuget\\packages\\system.composition.hosting\\6.0.0\\system.composition.hosting.6.0.0.nupkg.sha512",
     "C:\\Users\\ch\\.nuget\\packages\\system.composition.runtime\\6.0.0\\system.composition.runtime.6.0.0.nupkg.sha512",
     "C:\\Users\\ch\\.nuget\\packages\\system.composition.typedparts\\6.0.0\\system.composition.typedparts.6.0.0.nupkg.sha512",
-    "C:\\Users\\ch\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
+    "C:\\Users\\ch\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.5.0\\system.identitymodel.tokens.jwt.7.5.0.nupkg.sha512",
     "C:\\Users\\ch\\.nuget\\packages\\system.io.pipelines\\6.0.3\\system.io.pipelines.6.0.3.nupkg.sha512",
     "C:\\Users\\ch\\.nuget\\packages\\system.reflection.metadata\\6.0.1\\system.reflection.metadata.6.0.1.nupkg.sha512",
     "C:\\Users\\ch\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",

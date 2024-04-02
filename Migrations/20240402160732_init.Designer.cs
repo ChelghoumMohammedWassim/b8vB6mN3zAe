@@ -11,7 +11,7 @@ using b8vB6mN3zAe.Database;
 namespace b8vB6mN3zAe.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240401170505_init")]
+    [Migration("20240402160732_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -36,6 +36,10 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<int>("City")
                         .HasColumnType("integer");
 
+                    b.Property<string>("CreatedDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -43,6 +47,9 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()

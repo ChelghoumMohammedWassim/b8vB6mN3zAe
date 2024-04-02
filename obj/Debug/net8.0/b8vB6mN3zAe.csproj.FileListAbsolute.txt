@@ -120,3 +120,4 @@ E:\My-Projects\API\b8vB6mN3zAe\bin\Debug\net8.0\CSharpVitamins.ShortGuid.dll
 E:\My-Projects\API\b8vB6mN3zAe\bin\Debug\net8.0\Scrutor.dll
 E:\My-Projects\API\b8vB6mN3zAe\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.dll
 E:\My-Projects\API\b8vB6mN3zAe\bin\Debug\net8.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll
+E:\My-Projects\API\b8vB6mN3zAe\obj\Debug\net8.0\b8vB6mN3zAe.sourcelink.json
