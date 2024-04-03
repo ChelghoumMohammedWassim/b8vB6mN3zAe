@@ -27,5 +27,8 @@ namespace b8vB6mN3zAe.Dtos.UserDtos
 
         public required bool IsActive { get; set; }
 
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
+        public String? Password { get; set; }= null;
+
     }
 }

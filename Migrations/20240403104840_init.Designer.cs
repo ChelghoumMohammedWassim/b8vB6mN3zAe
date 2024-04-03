@@ -11,7 +11,7 @@ using b8vB6mN3zAe.Database;
 namespace b8vB6mN3zAe.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240402160732_init")]
+    [Migration("20240403104840_init")]
     partial class init
     {
         /// <inheritdoc />

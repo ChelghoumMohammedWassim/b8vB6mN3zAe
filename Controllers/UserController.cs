@@ -22,7 +22,7 @@ namespace b8vB6mN3zAe.Controllers
         {
             _context = context;
             _SECRETKEY = configuration["MySecretKey"];
-           
+
             try
             {
                 User? dbUser = _context.Users.FirstOrDefault(user => user.Role == Role.Admin);
@@ -97,11 +97,11 @@ namespace b8vB6mN3zAe.Controllers
                     return Unauthorized("Invalid Authorization.");
                 }
 
-                var users = await _context.Users.Where(user=> user.ID !=requestUserID)
+                var users = await _context.Users.Where(user => user.ID != requestUserID)
                 .OrderBy(user => user.Role).Reverse()
                 .Select(user => user.ToAdminUsersListResponseDto())
                 .ToListAsync();
-               
+
                 return Ok(users);
             }
             catch (Exception)
@@ -286,6 +286,11 @@ namespace b8vB6mN3zAe.Controllers
                 dbUser.PhoneNumber = userRequest.PhoneNumber;
                 dbUser.Email = userRequest.Email;
                 dbUser.City = userRequest.City;
+                if (userRequest.Password is not null)
+                {
+                dbUser.Password = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
+                }
+               
                 await _context.SaveChangesAsync();
 
                 return Ok("User Updated.");
