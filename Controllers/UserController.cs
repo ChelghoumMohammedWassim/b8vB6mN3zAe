@@ -25,6 +25,7 @@ namespace b8vB6mN3zAe.Controllers
 
             try
             {
+
                 User? dbUser = _context.Users.FirstOrDefault(user => user.Role == Role.Admin);
                 if (dbUser is null)
                 {
@@ -34,7 +35,7 @@ namespace b8vB6mN3zAe.Controllers
                         Password = BCrypt.Net.BCrypt.HashPassword("Admin"),
                         FirstName = "Admin",
                         LastName = "Admin",
-                        City = City.Annaba,
+                        City = CityEnum.Annaba,
                         Address = "Admin",
                         PhoneNumber = "0123456789",
                         Email = "Admin@mail.com",
@@ -52,7 +53,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
-        [Route("token")]
+        [Route("/by-token")]
         [Authorize]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
@@ -82,7 +83,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpGet]
-        [Route("/all_for_admin")]
+        [Route("/all-users")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllForAdmin()
         {
@@ -191,7 +192,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update_by_token")]
+        [Route("/update-user-by-token")]
         [Authorize]
         public async Task<IActionResult> UpdateUserByToke(UpdateUserRequest userRequest)
         {
@@ -254,8 +255,8 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update_by_id")]
-        [Authorize]
+        [Route("/update-user-by-id")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateUserRequest userRequest)
         {
             try
@@ -267,13 +268,12 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //identify user
-                //get user from db
                 User? dbUser = await _context.Users.FindAsync(userRequest.ID);
                 if (dbUser is null)
                 {
                     return NotFound("User Not found to be updated.");
                 }
-
+                // check user role
                 if (dbUser.Role == Role.Admin)
                 {
                     return Unauthorized("Can't update this user.");
@@ -288,9 +288,9 @@ namespace b8vB6mN3zAe.Controllers
                 dbUser.City = userRequest.City;
                 if (userRequest.Password is not null)
                 {
-                dbUser.Password = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
+                    dbUser.Password = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
                 }
-               
+
                 await _context.SaveChangesAsync();
 
                 return Ok("User Updated.");
