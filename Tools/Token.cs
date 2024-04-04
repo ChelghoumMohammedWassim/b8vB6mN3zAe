@@ -28,6 +28,26 @@ namespace b8vB6mN3zAe.Tools
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public static string CreateToken(Lab lab, string tokenKey)
+        {
+            List<Claim> claims = new List<Claim>
+        {
+            new Claim("ID", lab.ID),
+            new Claim(ClaimTypes.Role, "Lab")
+        };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(7),
+                signingCredentials: cred
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
         public static string? DecodeToken(string token, string tokenKey)
         {
             try

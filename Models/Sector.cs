@@ -12,7 +12,7 @@ namespace b8vB6mN3zAe.Models
         public  Lab? Lab { get; set; }
 
         public List<User> Users { get; set; }= new List<User>();
-        public List<UserSector> UsersSectors { get; set; }= [];
+        public List<UserSector> UsersSectors { get; set; }= new List<UserSector>();
 
         public List<City> Cities { get; set; } = new List<City>();
     }

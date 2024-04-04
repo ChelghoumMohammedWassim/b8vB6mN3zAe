@@ -19,7 +19,7 @@ namespace b8vB6mN3zAe.Dtos.UserDtos
         [Required(ErrorMessage = "LastName is required")]
         public required string LastName { get; set; }
 
-        public required CityEnum City { get; set; }
+        public required int City { get; set; }
 
         public String Address { get; set; } = String.Empty;
 

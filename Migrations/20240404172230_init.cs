@@ -19,7 +19,7 @@ namespace b8vB6mN3zAe.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatedDate = table.Column<string>(type: "text", nullable: false),
-                    SectorID = table.Column<string>(type: "text", nullable: false)
+                    SectorID = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,7 +27,7 @@ namespace b8vB6mN3zAe.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lab",
+                name: "Labs",
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
@@ -43,9 +43,9 @@ namespace b8vB6mN3zAe.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lab", x => x.ID);
+                    table.PrimaryKey("PK_Labs", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Lab_Cities_CityID",
+                        name: "FK_Labs_Cities_CityID",
                         column: x => x.CityID,
                         principalTable: "Cities",
                         principalColumn: "ID",
@@ -67,7 +67,6 @@ namespace b8vB6mN3zAe.Migrations
                     Role = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<string>(type: "text", nullable: false),
-                    City = table.Column<int>(type: "integer", nullable: false),
                     CityID = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -81,7 +80,7 @@ namespace b8vB6mN3zAe.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ZipCode",
+                name: "ZipCodes",
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
@@ -91,9 +90,9 @@ namespace b8vB6mN3zAe.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ZipCode", x => x.ID);
+                    table.PrimaryKey("PK_ZipCodes", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_ZipCode_Cities_CityID",
+                        name: "FK_ZipCodes_Cities_CityID",
                         column: x => x.CityID,
                         principalTable: "Cities",
                         principalColumn: "ID",
@@ -113,9 +112,9 @@ namespace b8vB6mN3zAe.Migrations
                 {
                     table.PrimaryKey("PK_Sectors", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Sectors_Lab_LabID",
+                        name: "FK_Sectors_Labs_LabID",
                         column: x => x.LabID,
-                        principalTable: "Lab",
+                        principalTable: "Labs",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -152,8 +151,8 @@ namespace b8vB6mN3zAe.Migrations
                 column: "SectorID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lab_CityID",
-                table: "Lab",
+                name: "IX_Labs_CityID",
+                table: "Labs",
                 column: "CityID");
 
             migrationBuilder.CreateIndex(
@@ -177,8 +176,8 @@ namespace b8vB6mN3zAe.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ZipCode_CityID",
-                table: "ZipCode",
+                name: "IX_ZipCodes_CityID",
+                table: "ZipCodes",
                 column: "CityID");
 
             migrationBuilder.AddForeignKey(
@@ -186,8 +185,7 @@ namespace b8vB6mN3zAe.Migrations
                 table: "Cities",
                 column: "SectorID",
                 principalTable: "Sectors",
-                principalColumn: "ID",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "ID");
         }
 
         /// <inheritdoc />
@@ -201,7 +199,7 @@ namespace b8vB6mN3zAe.Migrations
                 name: "UserSector");
 
             migrationBuilder.DropTable(
-                name: "ZipCode");
+                name: "ZipCodes");
 
             migrationBuilder.DropTable(
                 name: "Users");
@@ -210,7 +208,7 @@ namespace b8vB6mN3zAe.Migrations
                 name: "Sectors");
 
             migrationBuilder.DropTable(
-                name: "Lab");
+                name: "Labs");
 
             migrationBuilder.DropTable(
                 name: "Cities");

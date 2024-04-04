@@ -12,7 +12,7 @@ using b8vB6mN3zAe.Database;
 namespace b8vB6mN3zAe.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240403144528_init")]
+    [Migration("20240404172230_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace b8vB6mN3zAe.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("b8vB6mN3zAe.Models.Enums.City", b =>
+            modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,6 @@ namespace b8vB6mN3zAe.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SectorID")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
@@ -95,7 +94,7 @@ namespace b8vB6mN3zAe.Migrations
 
                     b.HasIndex("CityID");
 
-                    b.ToTable("Lab");
+                    b.ToTable("Labs");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>
@@ -130,9 +129,6 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("City")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("CityID")
                         .HasColumnType("integer");
@@ -224,24 +220,22 @@ namespace b8vB6mN3zAe.Migrations
 
                     b.HasIndex("CityID");
 
-                    b.ToTable("ZipCode");
+                    b.ToTable("ZipCodes");
                 });
 
-            modelBuilder.Entity("b8vB6mN3zAe.Models.Enums.City", b =>
+            modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
                     b.HasOne("b8vB6mN3zAe.Models.Sector", "Sector")
                         .WithMany("Cities")
-                        .HasForeignKey("SectorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SectorID");
 
                     b.Navigation("Sector");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
                 {
-                    b.HasOne("b8vB6mN3zAe.Models.Enums.City", "City")
-                        .WithMany()
+                    b.HasOne("b8vB6mN3zAe.Models.City", "City")
+                        .WithMany("Labs")
                         .HasForeignKey("CityID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -262,9 +256,11 @@ namespace b8vB6mN3zAe.Migrations
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.User", b =>
                 {
-                    b.HasOne("b8vB6mN3zAe.Models.Enums.City", null)
+                    b.HasOne("b8vB6mN3zAe.Models.City", "City")
                         .WithMany("Users")
                         .HasForeignKey("CityID");
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.UserSector", b =>
@@ -288,7 +284,7 @@ namespace b8vB6mN3zAe.Migrations
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.ZipCode", b =>
                 {
-                    b.HasOne("b8vB6mN3zAe.Models.Enums.City", "City")
+                    b.HasOne("b8vB6mN3zAe.Models.City", "City")
                         .WithMany("ZipCodes")
                         .HasForeignKey("CityID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,8 +293,10 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("b8vB6mN3zAe.Models.Enums.City", b =>
+            modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
+                    b.Navigation("Labs");
+
                     b.Navigation("Users");
 
                     b.Navigation("ZipCodes");

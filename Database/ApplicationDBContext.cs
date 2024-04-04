@@ -40,12 +40,25 @@ namespace b8vB6mN3zAe.Database
             modelBuilder.Entity<Sector>()
                 .HasMany(sector => sector.Cities)
                 .WithOne(city => city.Sector)
-                .HasForeignKey(city => city.SectorID)
-                .IsRequired();
+                .HasForeignKey(city => city.SectorID);
+
+            //relation user to city
+            modelBuilder.Entity<City>()
+                    .HasMany(sector => sector.Users)
+                    .WithOne(user => user.City)
+                    .HasForeignKey(user => user.CityID);
+
+            //relation lab to city
+            modelBuilder.Entity<City>()
+                    .HasMany(sector => sector.Labs)
+                    .WithOne(lab => lab.City)
+                    .HasForeignKey(lab => lab.CityID);
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<City> Cities { get; set; }
+        public DbSet<Lab> Labs { get; set; }
+        public DbSet<ZipCode> ZipCodes { get; set; }
     }
 }
