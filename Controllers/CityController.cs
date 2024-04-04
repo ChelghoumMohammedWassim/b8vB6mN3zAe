@@ -21,7 +21,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetCities()
         {
             try
@@ -114,6 +114,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCity([FromHeader] int id)
         {
             try

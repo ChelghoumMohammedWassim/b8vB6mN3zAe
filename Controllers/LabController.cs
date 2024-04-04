@@ -27,7 +27,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("/lab-by-token")]
-        [Authorize]
+        [Authorize(Roles = "Lab")]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
             try
@@ -151,6 +151,13 @@ namespace b8vB6mN3zAe.Controllers
                     return Unauthorized("User name can't be used.");
                 }
 
+                //check city if exist
+                City? city= await _context.Cities.FindAsync(labRequest.City);
+                if(city is null)
+                {
+                    return NotFound("City not found.");
+                }
+
                 //add user to db
                 await _context.Labs.AddAsync(labRequest.FromCreateLabRequestDto());
                 await _context.SaveChangesAsync();
@@ -167,7 +174,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("/update-lab-by-token")]
-        [Authorize]
+        [Authorize(Roles = "Lab")]
         public async Task<IActionResult> UpdateUserByToke(UpdateLabRequest labRequest)
         {
             try
@@ -192,6 +199,13 @@ namespace b8vB6mN3zAe.Controllers
                 if (dbLab is null)
                 {
                     return NotFound("User Not found to be updated.");
+                }
+
+                //check city if exist
+                City? city= await _context.Cities.FindAsync(labRequest.City);
+                if(city is null)
+                {
+                    return NotFound("City not found.");
                 }
 
                 //check confirmation password
@@ -249,6 +263,13 @@ namespace b8vB6mN3zAe.Controllers
                 if (dbLab is null)
                 {
                     return NotFound("User Not found to be updated.");
+                }
+
+                //check city if exist
+                City? city= await _context.Cities.FindAsync(labRequest.City);
+                if(city is null)
+                {
+                    return NotFound("City not found.");
                 }
 
                 //update user
