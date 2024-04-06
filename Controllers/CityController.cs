@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace b8vB6mN3zAe.Controllers
 {
-    [Route("City")]
+    [Route("city")]
     [ApiController]
     public class CityController : ControllerBase
     {
@@ -27,7 +27,10 @@ namespace b8vB6mN3zAe.Controllers
             try
             {
                 //get cities from db
-                var cities = await _context.Cities.Select(city => city.ToLabResponseDto()).ToArrayAsync();
+                var cities = await _context.Cities.
+                            Include(city => city.Sector).
+                            Select(city => city.ToCityResponseDto()).
+                            ToArrayAsync();
 
                 return Ok(cities);
             }
@@ -52,7 +55,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 //check if all ready exist
                 var usingNameCity = await _context.Cities.FirstOrDefaultAsync(city => city.Name == cityRequest.Name);
-                if (usingNameCity is not null && usingNameCity.ID == cityRequest.ID)
+                if (usingNameCity is not null && usingNameCity.ID != cityRequest.ID)
                 {
                     return Conflict("City already exist.");
                 }
@@ -63,6 +66,13 @@ namespace b8vB6mN3zAe.Controllers
                 if (dbCity is null)
                 {
                     return NotFound("City Not found");
+                }
+
+                //check sector if exist 
+                var sector = await _context.Sectors.FindAsync(cityRequest.SectorID);
+                if (sector is null)
+                {
+                    return NotFound("Sector not exist.");
                 }
 
                 dbCity.Name = cityRequest.Name;
@@ -99,7 +109,18 @@ namespace b8vB6mN3zAe.Controllers
                     return Conflict("City already exist.");
                 }
 
-                await _context.Cities.AddAsync(cityRequest.FromCreateLabRequestDto());
+                //check sector if exist 
+                if (cityRequest.SectorID != null)
+                {
+                    var sector = await _context.Sectors.FindAsync(cityRequest.SectorID);
+                    if (sector is null)
+                    {
+                        return NotFound("Sector not exist.");
+                    }
+                }
+
+
+                await _context.Cities.AddAsync(cityRequest.FromCreateCityRequestDto());
 
                 await _context.SaveChangesAsync();
 

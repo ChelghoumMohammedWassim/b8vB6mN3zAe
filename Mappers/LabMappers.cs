@@ -28,12 +28,28 @@ namespace b8vB6mN3zAe.Mappers
                 Name = lab.Name,
                 Email = lab.Email,
                 Address = lab.Address,
-                City = lab.City.ToLabResponseDto(),
+                City = lab.City.ToCityResponseDto(),
                 PhoneNumber = lab.PhoneNumber,
                 Sectors = lab.Sectors
             };
         }
-        
+
+        public static LabJoinResponse? ToLabJoinResponseDto(this Lab? lab)
+        {
+            if (lab is null)
+            {
+                return null;
+            }
+            return new LabJoinResponse
+            {
+                Name = lab.Name,
+                Email = lab.Email,
+                Address = lab.Address,
+                City = lab.City.ToCityJoinResponseDto(),
+                PhoneNumber = lab.PhoneNumber,
+            };
+        }
+
         public static AdminLabListResponse ToAdminLabsListResponseDto(this Lab lab)
         {
             return new AdminLabListResponse
@@ -41,15 +57,17 @@ namespace b8vB6mN3zAe.Mappers
                 ID = lab.ID,
                 UserName = lab.UserName,
                 Name = lab.Name,
-                City = lab.City.ToLabResponseDto(),
+                City = lab.City.ToCityResponseDto(),
                 Address = lab.Address,
                 PhoneNumber = lab.PhoneNumber,
                 Email = lab.Email,
                 IsActive = lab.IsActive,
                 CreatedDate = lab.CreatedDate,
-                Sectors= lab.Sectors
+                Sectors = lab.Sectors
             };
         }
+
+
 
     }
 }

@@ -30,7 +30,7 @@ namespace b8vB6mN3zAe.Mappers
                 LastName = user.LastName,
                 Email = user.Email,
                 Address= user.Address,
-                City = user.City.ToLabResponseDto(),
+                City = user.City.ToCityResponseDto(),
                 PhoneNumber = user.PhoneNumber,
                 Role = user.Role.ToString(),
             };
@@ -43,7 +43,7 @@ namespace b8vB6mN3zAe.Mappers
                 UserName = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                City = user.City.ToLabResponseDto(),
+                City = user.City.ToCityResponseDto(),
                 Address = user.Address,
                 PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
