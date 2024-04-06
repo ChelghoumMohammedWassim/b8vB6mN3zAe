@@ -8,7 +8,7 @@ namespace b8vB6mN3zAe.Models
         public required String Name { get; set; }
         public String CreatedDate { get; set; } = DateTime.Now.ToString();
 
-        public  String LabID { get; set; }= String.Empty;
+        public  String? LabID { get; set; }
         public  Lab? Lab { get; set; }
 
         public List<User> Users { get; set; }= new List<User>();

@@ -1,5 +1,4 @@
 using b8vB6mN3zAe.Models;
-using b8vB6mN3zAe.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace b8vB6mN3zAe.Database
@@ -17,8 +16,7 @@ namespace b8vB6mN3zAe.Database
             modelBuilder.Entity<Lab>()
                 .HasMany(lab => lab.Sectors)
                 .WithOne(Sector => Sector.Lab)
-                .HasForeignKey(Sector => Sector.LabID)
-                .IsRequired();
+                .HasForeignKey(Sector => Sector.LabID);
 
             //relation User to sector
             modelBuilder.Entity<Sector>()
