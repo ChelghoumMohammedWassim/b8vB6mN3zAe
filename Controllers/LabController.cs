@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace b8vB6mN3zAe.Controllers
 {
-    [Route("Lab")]
+    [Route("lab")]
     [ApiController]
     public class LabController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
-        [Route("/lab-by-token")]
+        [Route("token")]
         [Authorize(Roles = "Lab")]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
@@ -56,7 +56,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpGet]
-        [Route("/all-labs")]
+        [Route("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllLabForAdmin()
         {
@@ -74,6 +74,7 @@ namespace b8vB6mN3zAe.Controllers
                 //select labs 
                 var labs = await _context.Labs
                 .Include(lab=> lab.City)
+                .Include(lab=> lab.Sectors)
                 .Select(lab => lab.ToAdminLabsListResponseDto())
                 .ToListAsync();
 
@@ -85,9 +86,45 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("id")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetLabByID([FromHeader] string id)
+        {
+            try
+            {
+                //get user auth 
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+
+                //get user id
+                String requestUserID = Token.DecodeToken(accessToken, _SECRETKEY);
+                if (requestUserID is null)
+                {
+                    return Unauthorized("Invalid Authorization.");
+                }
+                //select lab
+                var lab = await _context.Labs
+                .Include(lab=> lab.City)
+                .Include(lab => lab.Sectors)
+                .FirstOrDefaultAsync(lab => lab.ID == id);
+
+                if (lab is null)
+                {
+                    return NotFound("Lab not Found");
+                }
+
+
+                return Ok(lab.ToAdminLabsListResponseDto());
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
 
         [HttpPost]
-        [Route("/lab-login")]
+        [Route("login")]
         public async Task<IActionResult> Login(LoginRequest labRequest)
         {
             try
@@ -133,7 +170,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Route("/lab-register"), Authorize(Roles = "Admin")]
+        [Route("register"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register(CreateLabRequest labRequest)
         {
             try
@@ -173,7 +210,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update-lab-by-token")]
+        [Route("token")]
         [Authorize(Roles = "Lab")]
         public async Task<IActionResult> UpdateUserByToke(UpdateLabRequest labRequest)
         {
@@ -246,7 +283,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update-lab-by-id")]
+        [Route("id")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateLabRequest labRequest)
         {

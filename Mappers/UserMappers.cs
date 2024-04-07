@@ -43,13 +43,14 @@ namespace b8vB6mN3zAe.Mappers
                 UserName = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                City = user.City.ToCityResponseDto(),
+                City = user.City.ToCityJoinResponseDto(),
                 Address = user.Address,
                 PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
-                Role = user.Role,
+                Role = user.Role.ToString(),
                 IsActive = user.IsActive,
-                CreatedDate = user.CreatedDate
+                CreatedDate = user.CreatedDate,
+                Sectors= user.UsersSectors.Select(userSector=> userSector.ToUserSectorResponseDto()).ToList(),
             };
         }
 

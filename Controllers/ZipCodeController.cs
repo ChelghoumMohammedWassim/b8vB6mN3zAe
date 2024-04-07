@@ -17,7 +17,7 @@ namespace b8vB6mN3zAe.Controllers
 
         private readonly ApplicationDBContext _context;
 
-        public ZipCodeController(ApplicationDBContext context, IConfiguration configuration)
+        public ZipCodeController(ApplicationDBContext context)
         {
             _context = context;
         }

@@ -28,9 +28,8 @@ namespace b8vB6mN3zAe.Mappers
                 Name = lab.Name,
                 Email = lab.Email,
                 Address = lab.Address,
-                City = lab.City.ToCityResponseDto(),
+                City = lab.City.ToCityJoinResponseDto(),
                 PhoneNumber = lab.PhoneNumber,
-                Sectors = lab.Sectors
             };
         }
 
@@ -42,6 +41,7 @@ namespace b8vB6mN3zAe.Mappers
             }
             return new LabJoinResponse
             {
+                ID = lab.ID,
                 Name = lab.Name,
                 Email = lab.Email,
                 Address = lab.Address,
@@ -57,13 +57,13 @@ namespace b8vB6mN3zAe.Mappers
                 ID = lab.ID,
                 UserName = lab.UserName,
                 Name = lab.Name,
-                City = lab.City.ToCityResponseDto(),
+                City = lab.City.ToCityJoinResponseDto(),
                 Address = lab.Address,
                 PhoneNumber = lab.PhoneNumber,
                 Email = lab.Email,
                 IsActive = lab.IsActive,
                 CreatedDate = lab.CreatedDate,
-                Sectors = lab.Sectors
+                Sectors = lab.Sectors.Select(sector=> sector.ToSectorJoinResponseDto()).ToList(),
             };
         }
 

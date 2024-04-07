@@ -14,13 +14,14 @@ namespace b8vB6mN3zAe.Controllers
 
         private readonly ApplicationDBContext _context;
 
-        public CityController(ApplicationDBContext context, IConfiguration configuration)
+        public CityController(ApplicationDBContext context)
         {
             _context = context;
         }
 
 
         [HttpGet]
+        [Route("all")]
         [Authorize]
         public async Task<IActionResult> GetCities()
         {
@@ -33,6 +34,31 @@ namespace b8vB6mN3zAe.Controllers
                             ToArrayAsync();
 
                 return Ok(cities);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+        [HttpGet]
+        [Route("id")]
+        [Authorize]
+        public async Task<IActionResult> GetCityBy([FromHeader] int id)
+        {
+            try
+            {
+                //get cities from db
+                var city = await _context.Cities.
+                            Include(city => city.Sector).
+                            FirstOrDefaultAsync(city => city.ID == id);
+
+                if (city is null)
+                {
+                    return NotFound("city not Found");
+                }
+
+                return Ok(city.ToCityResponseDto());
             }
             catch (Exception)
             {
@@ -54,7 +80,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check if all ready exist
-                var usingNameCity = await _context.Cities.FirstOrDefaultAsync(city => city.Name == cityRequest.Name);
+                var usingNameCity = await _context.Cities.FirstOrDefaultAsync(city => city.Name.ToLower() == cityRequest.Name.ToLower());
                 if (usingNameCity is not null && usingNameCity.ID != cityRequest.ID)
                 {
                     return Conflict("City already exist.");
@@ -103,7 +129,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check if all ready exist
-                var usingNameCity = await _context.Cities.FirstOrDefaultAsync(city => city.Name == cityRequest.Name);
+                var usingNameCity = await _context.Cities.FirstOrDefaultAsync(city => city.Name.ToLower() == cityRequest.Name.ToLower());
                 if (usingNameCity is not null)
                 {
                     return Conflict("City already exist.");

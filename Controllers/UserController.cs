@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace b8vB6mN3zAe.Controllers
 {
-    [Route("User")]
+    [Route("user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -25,12 +25,12 @@ namespace b8vB6mN3zAe.Controllers
 
             //insert default values
             DefaultValue.DefaultValue.InsertDefaultValues(_context);
-           
+
         }
 
 
         [HttpGet]
-        [Route("/user-by-token")]
+        [Route("token")]
         [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
@@ -61,7 +61,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpGet]
-        [Route("/all-users")]
+        [Route("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllForAdmin()
         {
@@ -79,6 +79,8 @@ namespace b8vB6mN3zAe.Controllers
                 //select users 
                 var users = await _context.Users.Where(user => user.ID != requestUserID)
                 .Include(u => u.City)
+                .Include(u=> u.UsersSectors)
+                .ThenInclude(userSector=> userSector.Sector)
                 .OrderBy(user => user.Role).Reverse()
                 .Select(user => user.ToAdminUsersListResponseDto())
                 .ToListAsync();
@@ -91,9 +93,45 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("id")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUserByID([FromHeader] string id)
+        {
+            try
+            {
+                //get user auth 
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+
+                //get user id
+                String requestUserID = Token.DecodeToken(accessToken, _SECRETKEY);
+                if (requestUserID is null)
+                {
+                    return Unauthorized("Invalid Authorization.");
+                }
+                //select users 
+                var user = await _context.Users.Where(user => user.ID != requestUserID)
+                .Include(u => u.City)
+                .Include(u=> u.UsersSectors)
+                .ThenInclude(userSector=> userSector.Sector)
+                .FirstOrDefaultAsync(user => user.ID == id);
+
+                if (user is null)
+                {
+                    return NotFound("User not Found");
+                }
+
+                return Ok(user.ToAdminUsersListResponseDto());
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, "Internal Server error." + e.Message);
+            }
+        }
+
 
         [HttpPost]
-        [Route("/user-login")]
+        [Route("login")]
         public async Task<IActionResult> Login(LoginRequest userRequest)
         {
             try
@@ -139,7 +177,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Route("/user-register"), Authorize(Roles = "Admin")]
+        [Route("register"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register(CreateUserRequest userRequest)
         {
             try
@@ -158,8 +196,8 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(userRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(userRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }
@@ -179,7 +217,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update-user-by-token")]
+        [Route("token")]
         [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> UpdateUserByToke(UpdateUserRequest userRequest)
         {
@@ -206,10 +244,10 @@ namespace b8vB6mN3zAe.Controllers
                 {
                     return NotFound("User Not found to be updated.");
                 }
-                
+
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(userRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(userRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }
@@ -253,7 +291,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Route("/update-user-by-id")]
+        [Route("id")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateUserRequest userRequest)
         {
@@ -278,8 +316,8 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(userRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(userRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }

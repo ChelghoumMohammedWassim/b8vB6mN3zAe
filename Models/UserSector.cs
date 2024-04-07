@@ -7,7 +7,7 @@ namespace b8vB6mN3zAe.Models
         public required String SectorID { get; set; }
         public required String UserID { get; set; }
 
-        public required Sector Sector { get; set; }
-        public required User User { get; set; }
+        public Sector? Sector { get; set; }
+        public User? User { get; set; }
     }
 }

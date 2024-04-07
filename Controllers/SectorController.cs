@@ -1,6 +1,7 @@
 using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,16 +14,19 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
         public SectorController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
         [HttpGet]
+        [Route("all")]
         [Authorize]
-        public async Task<IActionResult> GetSector()
+        public async Task<IActionResult> GetAllSector()
         {
             try
             {
@@ -42,8 +46,67 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("id")]
+        [Authorize]
+        public async Task<IActionResult> GetSectorByID([FromHeader] string id)
+        {
+            try
+            {
+                var sector = await _context.Sectors
+                .Include(city => city.Lab)
+                .Include(city => city.Cities)
+                .Include(city => city.Lab.City)
+                .FirstOrDefaultAsync(city => city.ID == id);
+
+                if (sector is null)
+                {
+                    return NotFound("Sector not Found");
+                }
+
+                return Ok(sector.ToSectorResponseDto());
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("token")]
+        [Authorize(Roles ="Agronomist, Pedologist")]
+        public async Task<IActionResult> GetSectorByUserToken()
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+                if(accessUserId is null)
+                {
+                    return Unauthorized("Invalid token");
+                }
+
+                var sectors = await _context.Sectors
+                .Include(city => city.Lab)
+                .Include(city => city.Cities)
+                .Include(city => city.Lab.City)
+                .Select(city => city.ToSectorResponseDto())
+                .ToArrayAsync();
+
+                return Ok(sectors);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+
         [HttpPost]
-        [Route("/create-sector")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCity(CreateSectorRequest sectorRequest)
         {
@@ -56,17 +119,20 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check if all ready exist
-                var usingNameSector = await _context.Sectors.FirstOrDefaultAsync(city => city.Name == sectorRequest.Name);
+                var usingNameSector = await _context.Sectors.FirstOrDefaultAsync(sector => sector.Name.ToLower() == sectorRequest.Name.ToLower());
                 if (usingNameSector is not null)
                 {
-                    return Conflict("City already exist.");
+                    return Conflict("Sector already exist.");
                 }
 
-                //check sector if exist 
-                var lab = await _context.Sectors.FindAsync(sectorRequest.LabID);
-                if (lab is null)
+                //check lab if exist 
+                if (sectorRequest.LabID != null)
                 {
-                    return NotFound("Lab not exist.");
+                    var lab = await _context.Labs.FindAsync(sectorRequest.LabID);
+                    if (lab is null)
+                    {
+                        return NotFound("lab not exist.");
+                    }
                 }
 
                 await _context.Sectors.AddAsync(sectorRequest.FromCreateSectorRequestDto());
@@ -83,7 +149,6 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpPut]
-        [Route("/update-sector")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateSector(UpdateSectorRequest sectorRequest)
         {
@@ -103,13 +168,13 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check if all ready exist
-                var usingNameSector = await _context.Sectors.FirstOrDefaultAsync(sector => sector.Name == sectorRequest.Name);
+                var usingNameSector = await _context.Sectors.FirstOrDefaultAsync(sector => sector.Name.ToLower() == sectorRequest.Name.ToLower());
                 if (usingNameSector is not null && usingNameSector.ID != sectorRequest.ID)
                 {
                     return Conflict("Sector already exist.");
                 }
 
-                //check sector if exist 
+                //check lab if exist 
                 if (sectorRequest.LabID != null)
                 {
                     var lab = await _context.Labs.FindAsync(sectorRequest.LabID);

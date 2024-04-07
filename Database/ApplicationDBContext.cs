@@ -58,5 +58,6 @@ namespace b8vB6mN3zAe.Database
         public DbSet<City> Cities { get; set; }
         public DbSet<Lab> Labs { get; set; }
         public DbSet<ZipCode> ZipCodes { get; set; }
+        public DbSet<UserSector> UserSector { get; set; }
     }
 }
