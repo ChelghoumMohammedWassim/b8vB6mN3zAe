@@ -1,4 +1,4 @@
-using b8vB6mN3zAe.Dtos.City;
+using b8vB6mN3zAe.Model;
 using b8vB6mN3zAe.Models;
 
 namespace b8vB6mN3zAe.Mappers

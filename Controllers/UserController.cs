@@ -1,4 +1,5 @@
 using b8vB6mN3zAe.Database;
+using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Dtos.UserDtos;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;

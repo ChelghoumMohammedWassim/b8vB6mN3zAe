@@ -1,5 +1,5 @@
 using b8vB6mN3zAe.Database;
-using b8vB6mN3zAe.Dtos.City;
+using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +30,8 @@ namespace b8vB6mN3zAe.Controllers
                 //get cities from db
                 var cities = await _context.Cities.
                             Include(city => city.Sector).
+                            Include(city => city.ZipCodes).
+                            OrderBy(city => city.ID).
                             Select(city => city.ToCityResponseDto()).
                             ToArrayAsync();
 
@@ -51,6 +53,8 @@ namespace b8vB6mN3zAe.Controllers
                 //get cities from db
                 var city = await _context.Cities.
                             Include(city => city.Sector).
+                            Include(city => city.ZipCodes).
+                            Include(city => city.ZipCodes).
                             FirstOrDefaultAsync(city => city.ID == id);
 
                 if (city is null)

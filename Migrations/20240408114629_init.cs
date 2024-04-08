@@ -85,6 +85,7 @@ namespace b8vB6mN3zAe.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Code = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<string>(type: "text", nullable: false),
                     CityID = table.Column<int>(type: "integer", nullable: false)
                 },

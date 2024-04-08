@@ -1,8 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using b8vB6mN3zAe.Dtos.City;
-using b8vB6mN3zAe.Models.Enums;
-
-namespace b8vB6mN3zAe.Dtos.UserDtos
+namespace b8vB6mN3zAe.Dtos
 {
     public class UserResponse
     {

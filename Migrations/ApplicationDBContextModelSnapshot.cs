@@ -201,7 +201,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<int>("CityID")
+                    b.Property<int?>("CityID")
+                        .IsRequired()
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Code")
                         .HasColumnType("integer");
 
                     b.Property<string>("CreatedDate")

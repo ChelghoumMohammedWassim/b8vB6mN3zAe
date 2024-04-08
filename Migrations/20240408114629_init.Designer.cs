@@ -12,7 +12,7 @@ using b8vB6mN3zAe.Database;
 namespace b8vB6mN3zAe.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240407152607_init")]
+    [Migration("20240408114629_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -204,7 +204,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<int>("CityID")
+                    b.Property<int?>("CityID")
+                        .IsRequired()
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Code")
                         .HasColumnType("integer");
 
                     b.Property<string>("CreatedDate")

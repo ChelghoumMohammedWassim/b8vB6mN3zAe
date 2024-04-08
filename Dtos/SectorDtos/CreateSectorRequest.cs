@@ -1,4 +1,3 @@
-using b8vB6mN3zAe.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace b8vB6mN3zAe.Models
