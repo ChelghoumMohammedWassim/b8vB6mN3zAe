@@ -12,5 +12,7 @@ namespace b8vB6mN3zAe.Models
         public required int? CityID { get; set; }
         public  City? City{ get; set; }
 
+        public List<Farmer> Farmers { get; set; }= new List<Farmer>();
+
     }
 }

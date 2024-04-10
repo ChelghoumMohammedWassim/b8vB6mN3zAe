@@ -32,13 +32,14 @@ namespace b8vB6mN3zAe.Database
                 .HasMany(city => city.ZipCodes)
                 .WithOne(ZipCode => ZipCode.City)
                 .HasForeignKey(ZipCode => ZipCode.CityID)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.SetNull);
 
             //relation sector to city
             modelBuilder.Entity<Sector>()
                 .HasMany(sector => sector.Cities)
                 .WithOne(city => city.Sector)
-                .HasForeignKey(city => city.SectorID);
+                .HasForeignKey(city => city.SectorID)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //relation user to city
             modelBuilder.Entity<City>()
@@ -51,6 +52,12 @@ namespace b8vB6mN3zAe.Database
                     .HasMany(sector => sector.Labs)
                     .WithOne(lab => lab.City)
                     .HasForeignKey(lab => lab.CityID);
+
+            //relation framer=> zip code
+            modelBuilder.Entity<ZipCode>()
+                    .HasMany(zipCode => zipCode.Farmers)
+                    .WithOne(farmer => farmer.ZipCode)
+                    .HasForeignKey(farmer => farmer.ZipCodeID);
         }
 
         public DbSet<User> Users { get; set; }
@@ -59,5 +66,6 @@ namespace b8vB6mN3zAe.Database
         public DbSet<Lab> Labs { get; set; }
         public DbSet<ZipCode> ZipCodes { get; set; }
         public DbSet<UserSector> UserSector { get; set; }
+        public DbSet<Farmer> Farmers { get; set; }
     }
 }

@@ -48,6 +48,44 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("Cities");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NCNA")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ZipCodeID")
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ZipCodeID");
+
+                    b.ToTable("Farmers");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
                 {
                     b.Property<string>("ID")
@@ -202,7 +240,6 @@ namespace b8vB6mN3zAe.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("CityID")
-                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<int>("Code")
@@ -227,9 +264,19 @@ namespace b8vB6mN3zAe.Migrations
                 {
                     b.HasOne("b8vB6mN3zAe.Models.Sector", "Sector")
                         .WithMany("Cities")
-                        .HasForeignKey("SectorID");
+                        .HasForeignKey("SectorID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Sector");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.ZipCode", "ZipCode")
+                        .WithMany("Farmers")
+                        .HasForeignKey("ZipCodeID");
+
+                    b.Navigation("ZipCode");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
@@ -285,8 +332,7 @@ namespace b8vB6mN3zAe.Migrations
                     b.HasOne("b8vB6mN3zAe.Models.City", "City")
                         .WithMany("ZipCodes")
                         .HasForeignKey("CityID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("City");
                 });
@@ -315,6 +361,11 @@ namespace b8vB6mN3zAe.Migrations
             modelBuilder.Entity("b8vB6mN3zAe.Models.User", b =>
                 {
                     b.Navigation("UsersSectors");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.ZipCode", b =>
+                {
+                    b.Navigation("Farmers");
                 });
 #pragma warning restore 612, 618
         }

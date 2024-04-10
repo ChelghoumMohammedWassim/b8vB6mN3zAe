@@ -87,7 +87,7 @@ namespace b8vB6mN3zAe.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Code = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<string>(type: "text", nullable: false),
-                    CityID = table.Column<int>(type: "integer", nullable: false)
+                    CityID = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -97,7 +97,7 @@ namespace b8vB6mN3zAe.Migrations
                         column: x => x.CityID,
                         principalTable: "Cities",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,6 +116,29 @@ namespace b8vB6mN3zAe.Migrations
                         name: "FK_Sectors_Labs_LabID",
                         column: x => x.LabID,
                         principalTable: "Labs",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Farmers",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    NCNA = table.Column<string>(type: "text", nullable: false),
+                    ZipCodeID = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Farmers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Farmers_ZipCodes_ZipCodeID",
+                        column: x => x.ZipCodeID,
+                        principalTable: "ZipCodes",
                         principalColumn: "ID");
                 });
 
@@ -149,6 +172,11 @@ namespace b8vB6mN3zAe.Migrations
                 name: "IX_Cities_SectorID",
                 table: "Cities",
                 column: "SectorID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Farmers_ZipCodeID",
+                table: "Farmers",
+                column: "ZipCodeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Labs_CityID",
@@ -185,7 +213,8 @@ namespace b8vB6mN3zAe.Migrations
                 table: "Cities",
                 column: "SectorID",
                 principalTable: "Sectors",
-                principalColumn: "ID");
+                principalColumn: "ID",
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
@@ -194,6 +223,9 @@ namespace b8vB6mN3zAe.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Cities_Sectors_SectorID",
                 table: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "Farmers");
 
             migrationBuilder.DropTable(
                 name: "UserSector");
