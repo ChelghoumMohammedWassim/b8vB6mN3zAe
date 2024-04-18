@@ -23,7 +23,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        // [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetFarmer()
         {
             try
@@ -44,7 +44,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("zipCode")]
-        // [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetFarmerByZipCode([FromHeader] String zipCodeID)
         {
             try
@@ -66,7 +66,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("city")]
-        // [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetFarmerByCity([FromHeader] int cityID)
         {
             try
@@ -88,7 +88,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("sector")]
-        // [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetFarmerBySector([FromHeader] String sectoeID)
         {
             try
@@ -96,7 +96,7 @@ namespace b8vB6mN3zAe.Controllers
                 //get farmers from db
                 var farmers = await _context.Farmers.
                             Include(farmer => farmer.ZipCode).
-                            ThenInclude(ZipCode=> ZipCode.City).
+                            ThenInclude(ZipCode => ZipCode.City).
                             Where(farmer => farmer.ZipCode.City.SectorID == sectoeID).
                             Select(farmer => farmer.ToFarmerResponseDto()).
                             ToArrayAsync();
@@ -111,7 +111,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetFarmerBy([FromHeader] String id)
         {
             try
@@ -137,7 +137,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> UpdateFarmer(UpdateFarmerRequest farmerRequest)
         {
             try
@@ -191,7 +191,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> CreateFarmer(CreateFarmerRequest farmerRequest)
         {
             try
@@ -232,7 +232,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> DeleteFarmer([FromHeader] String id)
         {
             try

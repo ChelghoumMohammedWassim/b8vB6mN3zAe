@@ -43,7 +43,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
         public async Task<IActionResult> GetZipCodeBy([FromHeader] String id)
         {
             try
