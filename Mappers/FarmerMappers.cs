@@ -35,6 +35,7 @@ namespace b8vB6mN3zAe.Mappers
                 NCNA = farmer.NCNA,
                 Address = farmer.Address,
                 ZipCode = farmer.ZipCode.ToZipCodeJoinResponseDto(), 
+                Lands = farmer.Lands.Select(land=> land.ToLandJoinResponseDto()).ToList(),
             };
         }
 

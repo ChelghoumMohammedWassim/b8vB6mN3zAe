@@ -31,6 +31,8 @@ namespace b8vB6mN3zAe.Controllers
                 //get farmers from db
                 var farmers = await _context.Farmers.
                             Include(farmer => farmer.ZipCode).
+                            Include(farmer=> farmer.Lands).
+                            ThenInclude(land=> land.Positions).
                             Select(farmer => farmer.ToFarmerResponseDto()).
                             ToArrayAsync();
 
@@ -53,6 +55,8 @@ namespace b8vB6mN3zAe.Controllers
                 var farmers = await _context.Farmers.
                             Where(farmer => farmer.ZipCodeID == zipCodeID).
                             Include(farmer => farmer.ZipCode).
+                            Include(farmer=> farmer.Lands).
+                            ThenInclude(land=> land.Positions).
                             Select(farmer => farmer.ToFarmerResponseDto()).
                             ToArrayAsync();
 
@@ -75,6 +79,8 @@ namespace b8vB6mN3zAe.Controllers
                 var farmers = await _context.Farmers.
                             Include(farmer => farmer.ZipCode).
                             Where(farmer => farmer.ZipCode.CityID == cityID).
+                            Include(farmer=> farmer.Lands).
+                            ThenInclude(land=> land.Positions).
                             Select(farmer => farmer.ToFarmerResponseDto()).
                             ToArrayAsync();
 
@@ -95,6 +101,8 @@ namespace b8vB6mN3zAe.Controllers
             {
                 //get farmers from db
                 var farmers = await _context.Farmers.
+                            Include(farmer=> farmer.Lands).
+                            ThenInclude(land=> land.Positions).
                             Include(farmer => farmer.ZipCode).
                             ThenInclude(ZipCode => ZipCode.City).
                             Where(farmer => farmer.ZipCode.City.SectorID == sectoeID).
@@ -118,6 +126,8 @@ namespace b8vB6mN3zAe.Controllers
             {
                 //get farmer from db
                 var farmer = await _context.Farmers.
+                            Include(farmer=> farmer.Lands).
+                            ThenInclude(land=> land.Positions).
                             Include(farmer => farmer.ZipCode).
                             FirstOrDefaultAsync(farmer => farmer.ID == id);
                 ;

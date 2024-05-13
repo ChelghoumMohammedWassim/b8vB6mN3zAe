@@ -132,6 +132,54 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("Labs");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Land", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FarmerID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Rainfall")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("FarmerID");
+
+                    b.ToTable("Lands");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Position", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("LandID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("latitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("longitude")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("LandID");
+
+                    b.ToTable("Positions");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>
                 {
                     b.Property<string>("ID")
@@ -290,6 +338,28 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Land", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Farmer", "Farmer")
+                        .WithMany("Lands")
+                        .HasForeignKey("FarmerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Farmer");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Position", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Land", "Land")
+                        .WithMany("Positions")
+                        .HasForeignKey("LandID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Land");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>
                 {
                     b.HasOne("b8vB6mN3zAe.Models.Lab", "Lab")
@@ -346,9 +416,19 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("ZipCodes");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
+                {
+                    b.Navigation("Lands");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
                 {
                     b.Navigation("Sectors");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Land", b =>
+                {
+                    b.Navigation("Positions");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>

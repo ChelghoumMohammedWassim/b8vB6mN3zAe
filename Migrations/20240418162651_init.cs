@@ -168,6 +168,47 @@ namespace b8vB6mN3zAe.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Lands",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Rainfall = table.Column<int>(type: "integer", nullable: false),
+                    FarmerID = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lands", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Lands_Farmers_FarmerID",
+                        column: x => x.FarmerID,
+                        principalTable: "Farmers",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Positions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    longitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    LandID = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Positions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Positions_Lands_LandID",
+                        column: x => x.LandID,
+                        principalTable: "Lands",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cities_SectorID",
                 table: "Cities",
@@ -182,6 +223,16 @@ namespace b8vB6mN3zAe.Migrations
                 name: "IX_Labs_CityID",
                 table: "Labs",
                 column: "CityID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lands_FarmerID",
+                table: "Lands",
+                column: "FarmerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Positions_LandID",
+                table: "Positions",
+                column: "LandID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sectors_LabID",
@@ -225,16 +276,22 @@ namespace b8vB6mN3zAe.Migrations
                 table: "Cities");
 
             migrationBuilder.DropTable(
-                name: "Farmers");
+                name: "Positions");
 
             migrationBuilder.DropTable(
                 name: "UserSector");
 
             migrationBuilder.DropTable(
-                name: "ZipCodes");
+                name: "Lands");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Farmers");
+
+            migrationBuilder.DropTable(
+                name: "ZipCodes");
 
             migrationBuilder.DropTable(
                 name: "Sectors");
