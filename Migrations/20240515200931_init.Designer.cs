@@ -12,7 +12,7 @@ using b8vB6mN3zAe.Database;
 namespace b8vB6mN3zAe.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240418162651_init")]
+    [Migration("20240515200931_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -51,12 +51,42 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("Cities");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Exploitation", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Diameter")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("LandID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Property")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("LandID");
+
+                    b.ToTable("Exploitations");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
                     b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedDate")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -140,6 +170,10 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<string>("CreatedDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("FarmerID")
                         .IsRequired()
                         .HasColumnType("text");
@@ -158,6 +192,47 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("Lands");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Plot", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExploitationID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Length")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Polygon")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Production")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Surface")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("TreeAge")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Width")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ExploitationID");
+
+                    b.ToTable("Plots");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Position", b =>
                 {
                     b.Property<int>("ID")
@@ -165,6 +240,10 @@ namespace b8vB6mN3zAe.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CreatedDate")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("LandID")
                         .IsRequired()
@@ -181,6 +260,33 @@ namespace b8vB6mN3zAe.Migrations
                     b.HasIndex("LandID");
 
                     b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PlotID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SamplingDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PlotID");
+
+                    b.ToTable("Samples");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>
@@ -321,6 +427,17 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Sector");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Exploitation", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Land", "Land")
+                        .WithMany("Exploitations")
+                        .HasForeignKey("LandID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Land");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
                 {
                     b.HasOne("b8vB6mN3zAe.Models.ZipCode", "ZipCode")
@@ -352,6 +469,17 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Farmer");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Plot", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Exploitation", "Exploitation")
+                        .WithMany("Plots")
+                        .HasForeignKey("ExploitationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exploitation");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Position", b =>
                 {
                     b.HasOne("b8vB6mN3zAe.Models.Land", "Land")
@@ -361,6 +489,17 @@ namespace b8vB6mN3zAe.Migrations
                         .IsRequired();
 
                     b.Navigation("Land");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Plot", "Plot")
+                        .WithMany("Samples")
+                        .HasForeignKey("PlotID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plot");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>
@@ -419,6 +558,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("ZipCodes");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Exploitation", b =>
+                {
+                    b.Navigation("Plots");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Farmer", b =>
                 {
                     b.Navigation("Lands");
@@ -431,7 +575,14 @@ namespace b8vB6mN3zAe.Migrations
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Land", b =>
                 {
+                    b.Navigation("Exploitations");
+
                     b.Navigation("Positions");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Plot", b =>
+                {
+                    b.Navigation("Samples");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>

@@ -130,6 +130,7 @@ namespace b8vB6mN3zAe.Migrations
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     NCNA = table.Column<string>(type: "text", nullable: false),
+                    CreatedDate = table.Column<string>(type: "text", nullable: false),
                     ZipCodeID = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -175,6 +176,7 @@ namespace b8vB6mN3zAe.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Rainfall = table.Column<int>(type: "integer", nullable: false),
+                    CreatedDate = table.Column<string>(type: "text", nullable: false),
                     FarmerID = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -189,6 +191,27 @@ namespace b8vB6mN3zAe.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Exploitations",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    Property = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Diameter = table.Column<decimal>(type: "numeric", nullable: false),
+                    LandID = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Exploitations", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Exploitations_Lands_LandID",
+                        column: x => x.LandID,
+                        principalTable: "Lands",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Positions",
                 columns: table => new
                 {
@@ -196,6 +219,7 @@ namespace b8vB6mN3zAe.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     longitude = table.Column<decimal>(type: "numeric", nullable: false),
                     latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedDate = table.Column<string>(type: "text", nullable: false),
                     LandID = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -209,10 +233,62 @@ namespace b8vB6mN3zAe.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Plots",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Polygon = table.Column<int>(type: "integer", nullable: false),
+                    Surface = table.Column<decimal>(type: "numeric", nullable: false),
+                    Production = table.Column<decimal>(type: "numeric", nullable: false),
+                    TreeAge = table.Column<int>(type: "integer", nullable: false),
+                    Width = table.Column<decimal>(type: "numeric", nullable: false),
+                    Length = table.Column<decimal>(type: "numeric", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    ExploitationID = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plots", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Plots_Exploitations_ExploitationID",
+                        column: x => x.ExploitationID,
+                        principalTable: "Exploitations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Samples",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    Reference = table.Column<string>(type: "text", nullable: false),
+                    SamplingDate = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    PlotID = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Samples", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Samples_Plots_PlotID",
+                        column: x => x.PlotID,
+                        principalTable: "Plots",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cities_SectorID",
                 table: "Cities",
                 column: "SectorID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Exploitations_LandID",
+                table: "Exploitations",
+                column: "LandID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Farmers_ZipCodeID",
@@ -230,9 +306,19 @@ namespace b8vB6mN3zAe.Migrations
                 column: "FarmerID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Plots_ExploitationID",
+                table: "Plots",
+                column: "ExploitationID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Positions_LandID",
                 table: "Positions",
                 column: "LandID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Samples_PlotID",
+                table: "Samples",
+                column: "PlotID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sectors_LabID",
@@ -279,13 +365,22 @@ namespace b8vB6mN3zAe.Migrations
                 name: "Positions");
 
             migrationBuilder.DropTable(
+                name: "Samples");
+
+            migrationBuilder.DropTable(
                 name: "UserSector");
 
             migrationBuilder.DropTable(
-                name: "Lands");
+                name: "Plots");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Exploitations");
+
+            migrationBuilder.DropTable(
+                name: "Lands");
 
             migrationBuilder.DropTable(
                 name: "Farmers");
