@@ -65,12 +65,7 @@ namespace b8vB6mN3zAe.Database
                     .WithOne(land => land.Farmer)
                     .HasForeignKey(land => land.FarmerID);
             
-            //relation Land to Position
-            modelBuilder.Entity<Land>()
-                    .HasMany(land => land.Positions)
-                    .WithOne(position => position.Land)
-                    .HasForeignKey(position => position.LandID)
-                    .IsRequired();
+        
 
             //relation Land to Exploitation
             modelBuilder.Entity<Land>()
@@ -91,6 +86,13 @@ namespace b8vB6mN3zAe.Database
                     .HasMany(plot => plot.Samples)
                     .WithOne(sample => sample.Plot)
                     .HasForeignKey(sample => sample.PlotID)
+                    .IsRequired();
+
+            //relation Plot to Position
+            modelBuilder.Entity<Plot>()
+                    .HasMany(plot => plot.Positions)
+                    .WithOne(position => position.Plot)
+                    .HasForeignKey(position => position.PlotId)
                     .IsRequired();
 
         }

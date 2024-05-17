@@ -7,7 +7,7 @@ namespace b8vB6mN3zAe.Models
         public required decimal latitude { get; set; }
         public String CreatedDate { get; set; } = DateTime.Now.ToString();
 
-        public required String LandID { get; set; }
-        public Land? Land { get; set; }
+        public required String PlotId { get; set; }
+        public Plot? Plot { get; set; }
     }
 }

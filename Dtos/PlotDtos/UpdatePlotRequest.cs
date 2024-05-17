@@ -13,10 +13,12 @@ namespace b8vB6mN3zAe.Dtos
         public required decimal Production { get; set; }
         public required int TreeAge { get; set; }
         public required decimal Width { get; set; }
+        public required decimal Length { get; set; }
         public required int MyProperty { get; set; }
         public required ExploitationType Type { get; set; }
 
         public required String ExploitationID { get; set; }
+        public List<PositionCreateRequest> Positions { get; set; } = new List<PositionCreateRequest>();
 
     }
 }

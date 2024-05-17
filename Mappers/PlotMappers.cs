@@ -21,32 +21,45 @@ namespace b8vB6mN3zAe.Mappers
             };
         }
 
-        // public static CityResponse? ToCityResponseDto(this City? city)
-        // {
-        //     if (city is null)
-        //     {
-        //         return null;
-        //     }
-        //     return new CityResponse
-        //     {
-        //         ID = city.ID,
-        //         Name = city.Name,
-        //         Sector = city.Sector.ToSectorJoinResponseDto(),
-        //         ZipCodes = city.ZipCodes.Select(zipCode=> zipCode.ToZipCodeJoinResponseDto()).ToList()
-        //     };
-        // }
+        public static PlotResponse? ToPlotResponseDto(this Plot? plot)
+        {
+            if (plot is null)
+            {
+                return null;
+            }
+            return new PlotResponse{
+                ID = plot.ID,
+                Name = plot.Name,
+                Polygon = plot.Polygon,
+                Surface = plot.Surface,
+                Production = plot.Production,
+                TreeAge = plot.TreeAge,
+                Width = plot.Width,
+                Length = plot.Length,
+                Type = plot.Type,
+                Exploitation = plot.Exploitation.ToExploitationJoinResponseDto(),
+                Positions = plot.Positions.Select(p=> p.ToPositionResponseDto()).ToList(),
+            };
+        }
 
-        // public static CityJoinResponse? ToCityJoinResponseDto(this City? city)
-        // {
-        //     if (city is null)
-        //     {
-        //         return null;
-        //     }
-        //     return new CityJoinResponse
-        //     {
-        //         ID = city.ID,
-        //         Name = city.Name
-        //     };
-        // }
+        public static PlotJoinResponse? ToJoinPlotResponseDto(this Plot? plot)
+        {
+            if (plot is null)
+            {
+                return null;
+            }
+            return new PlotJoinResponse{
+                ID = plot.ID,
+                Name = plot.Name,
+                Polygon = plot.Polygon,
+                Surface = plot.Surface,
+                Production = plot.Production,
+                TreeAge = plot.TreeAge,
+                Width = plot.Width,
+                Length = plot.Length,
+                Type = plot.Type,
+                Positions = plot.Positions.Select(p=> p.ToPositionResponseDto()).ToList(),
+            };
+        }
     }
 }

@@ -9,8 +9,6 @@ namespace b8vB6mN3zAe.Models
 
         public required String FarmerID { get; set; }
         public  Farmer? Farmer { get; set; }
-
-        public List<Position> Positions { get; set; } = new List<Position>();
         public List<Exploitation> Exploitations { get; set; } = new List<Exploitation>();
     }
 }

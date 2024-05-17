@@ -5,13 +5,13 @@ namespace b8vB6mN3zAe.Mappers
 {
     public static class PositionMappers
     {
-        public static Position FromCreatePositionRequestDto(this PositionCreateRequest positionRequest, String landId)
+        public static Position FromCreatePositionRequestDto(this PositionCreateRequest positionRequest, String PlotId)
         {
             return new Position
             {
                 latitude= positionRequest.latitude,
                 longitude= positionRequest.longitude,
-                LandID= landId
+                PlotId= PlotId
             };
         }
 

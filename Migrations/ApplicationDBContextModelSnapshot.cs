@@ -242,7 +242,7 @@ namespace b8vB6mN3zAe.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LandID")
+                    b.Property<string>("PlotId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -254,7 +254,7 @@ namespace b8vB6mN3zAe.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("LandID");
+                    b.HasIndex("PlotId");
 
                     b.ToTable("Positions");
                 });
@@ -479,13 +479,13 @@ namespace b8vB6mN3zAe.Migrations
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Position", b =>
                 {
-                    b.HasOne("b8vB6mN3zAe.Models.Land", "Land")
+                    b.HasOne("b8vB6mN3zAe.Models.Plot", "Plot")
                         .WithMany("Positions")
-                        .HasForeignKey("LandID")
+                        .HasForeignKey("PlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Land");
+                    b.Navigation("Plot");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
@@ -573,12 +573,12 @@ namespace b8vB6mN3zAe.Migrations
             modelBuilder.Entity("b8vB6mN3zAe.Models.Land", b =>
                 {
                     b.Navigation("Exploitations");
-
-                    b.Navigation("Positions");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Plot", b =>
                 {
+                    b.Navigation("Positions");
+
                     b.Navigation("Samples");
                 });
 

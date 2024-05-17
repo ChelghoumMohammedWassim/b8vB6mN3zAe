@@ -17,5 +17,7 @@ namespace b8vB6mN3zAe.Models
         public required String ExploitationID { get; set; }
         public Exploitation? Exploitation { get; set; }
         public List<Sample> Samples { get; set; } = new List<Sample>(); 
+        public List<Position> Positions { get; set; } = new List<Position>();
+
     }
 }

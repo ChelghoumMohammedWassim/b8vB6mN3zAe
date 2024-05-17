@@ -27,7 +27,22 @@ namespace b8vB6mN3zAe.Mappers
                 Name = land.Name,
                 Rainfall = land.Rainfall,
                 Farmer = land.Farmer.ToFarmerJoinResponseDto(),
-                Positions = land.Positions.Select(land=> land.ToPositionResponseDto()).ToList(),
+            };
+        }
+
+        public static LandListResponse? ToLandListResponseDto(this Land? land)
+        {
+            if (land is null)
+            {
+                return null;
+            }
+            return new LandListResponse
+            {
+                ID = land.ID,
+                Name = land.Name,
+                Rainfall = land.Rainfall,
+                Farmer = land.Farmer.ToFarmerJoinResponseDto(),
+                Exploitations = land.Exploitations.Select(e=> e.ToExploitationListResponseDto()).ToList()
             };
         }
 
@@ -42,7 +57,6 @@ namespace b8vB6mN3zAe.Mappers
                 ID = land.ID,
                 Name = land.Name,
                 Rainfall = land.Rainfall,
-                Positions = land.Positions.Select(land=> land.ToPositionResponseDto()).ToList(),
             };
         }
     }
