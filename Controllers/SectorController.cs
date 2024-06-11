@@ -76,7 +76,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("token")]
-        [Authorize(Roles ="Agronomist, Pedologist")]
+        [Authorize]
         public async Task<IActionResult> GetSectorByUserToken()
         {
             try
@@ -107,7 +107,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateCity(CreateSectorRequest sectorRequest)
         {
             try
@@ -149,7 +149,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateSector(UpdateSectorRequest sectorRequest)
         {
             try
@@ -201,7 +201,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> DeleteSector([FromHeader] String id)
         {
             try

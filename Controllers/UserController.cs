@@ -32,7 +32,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("token")]
-        [Authorize(Roles = "Agronomist, Pedologist")]
+        [Authorize]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
             try
@@ -63,7 +63,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllForAdmin()
         {
             try
@@ -96,7 +96,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetUserByID([FromHeader] string id)
         {
             try
@@ -178,7 +178,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Route("register"), Authorize(Roles = "Admin")]
+        [Route("register"), Authorize]
         public async Task<IActionResult> Register(CreateUserRequest userRequest)
         {
             try
@@ -219,7 +219,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("token")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateUserByToke(UpdateUserRequest userRequest)
         {
             try
@@ -293,7 +293,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("id")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateUserRequest userRequest)
         {
             try

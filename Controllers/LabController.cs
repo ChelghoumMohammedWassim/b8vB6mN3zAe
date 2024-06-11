@@ -27,7 +27,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("token")]
-        [Authorize(Roles = "Lab")]
+        [Authorize]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
             try
@@ -57,7 +57,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllLabForAdmin()
         {
             try
@@ -88,7 +88,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetLabByID([FromHeader] string id)
         {
             try
@@ -170,7 +170,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Route("register"), Authorize(Roles = "Admin")]
+        [Route("register"), Authorize]
         public async Task<IActionResult> Register(CreateLabRequest labRequest)
         {
             try
@@ -211,7 +211,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("token")]
-        [Authorize(Roles = "Lab")]
+        [Authorize]
         public async Task<IActionResult> UpdateUserByToke(UpdateLabRequest labRequest)
         {
             try
@@ -284,7 +284,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("id")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateLabRequest labRequest)
         {
             try

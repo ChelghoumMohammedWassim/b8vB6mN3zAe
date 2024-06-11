@@ -72,7 +72,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateCity(UpdateCityRequest cityRequest)
         {
             try
@@ -121,7 +121,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateCity(CreateCityRequest cityRequest)
         {
             try
@@ -165,7 +165,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> DeleteCity([FromHeader] int id)
         {
             try

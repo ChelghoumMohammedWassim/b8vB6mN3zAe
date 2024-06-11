@@ -23,7 +23,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetFarmer()
         {
             try
@@ -45,7 +45,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("zipCode")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetFarmerByZipCode([FromHeader] String zipCodeID)
         {
             try
@@ -68,7 +68,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("city")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetFarmerByCity([FromHeader] int cityID)
         {
             try
@@ -91,7 +91,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("sector")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetFarmerBySector([FromHeader] String sectoeID)
         {
             try
@@ -115,7 +115,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetFarmerBy([FromHeader] String id)
         {
             try
@@ -142,7 +142,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateFarmer(UpdateFarmerRequest farmerRequest)
         {
             try
@@ -196,7 +196,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateFarmer(CreateFarmerRequest farmerRequest)
         {
             try
@@ -237,7 +237,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> DeleteFarmer([FromHeader] String id)
         {
             try

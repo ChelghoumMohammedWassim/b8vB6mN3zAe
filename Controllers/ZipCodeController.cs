@@ -43,7 +43,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize(Roles = "Agronomist, Pedologist, Admin")]
+        [Authorize]
         public async Task<IActionResult> GetZipCodeBy([FromHeader] String id)
         {
             try
@@ -69,7 +69,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateZipCode(CreateZipCodeRequest zipCodeRequest)
         {
             try
@@ -119,7 +119,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> UpdateZipCode(UpdateZipCodeRequest zipCodeRequest)
         {
             try
@@ -174,7 +174,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> DeleteZipCode([FromHeader] String id)
         {
             try
