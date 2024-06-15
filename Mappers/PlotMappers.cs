@@ -39,6 +39,7 @@ namespace b8vB6mN3zAe.Mappers
                 Type = plot.Type,
                 Exploitation = plot.Exploitation.ToExploitationJoinResponseDto(),
                 Positions = plot.Positions.Select(p=> p.ToPositionResponseDto()).ToList(),
+                Samples = plot.Samples.Select(p=> p.ToSampleResponseDto()).ToList(),
             };
         }
 

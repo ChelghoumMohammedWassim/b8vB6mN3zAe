@@ -15,32 +15,21 @@ namespace b8vB6mN3zAe.Mappers
             };
         }
 
-        // public static CityResponse? ToCityResponseDto(this City? city)
-        // {
-        //     if (city is null)
-        //     {
-        //         return null;
-        //     }
-        //     return new CityResponse
-        //     {
-        //         ID = city.ID,
-        //         Name = city.Name,
-        //         Sector = city.Sector.ToSectorJoinResponseDto(),
-        //         ZipCodes = city.ZipCodes.Select(zipCode=> zipCode.ToZipCodeJoinResponseDto()).ToList()
-        //     };
-        // }
+        public static SampleResponse? ToSampleResponseDto(this Sample? sample)
+        {
+            if (sample is null)
+            {
+                return null;
+            }
+            return new SampleResponse
+            {
+                ID = sample.ID,
+                Reference = sample.Reference,
+                SamplingDate = sample.SamplingDate,
+                Status = sample.Status.ToString(),
+                Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
 
-        // public static CityJoinResponse? ToCityJoinResponseDto(this City? city)
-        // {
-        //     if (city is null)
-        //     {
-        //         return null;
-        //     }
-        //     return new CityJoinResponse
-        //     {
-        //         ID = city.ID,
-        //         Name = city.Name
-        //     };
-        // }
+            };
+        }
     }
 }

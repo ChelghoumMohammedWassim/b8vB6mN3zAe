@@ -175,8 +175,7 @@ namespace b8vB6mN3zAe.Controllers
                     return NotFound("ZipCode not exist.");
                 }
 
-                dbFarmer.FirstName = farmerRequest.FirstName;
-                dbFarmer.LastName = farmerRequest.LastName;
+                dbFarmer.FullName = farmerRequest.FirstName;
                 dbFarmer.Address = farmerRequest.Address;
                 dbFarmer.ZipCodeID = farmerRequest.ZipCodeID;
                 dbFarmer.PhoneNumber = farmerRequest.PhoneNumber;

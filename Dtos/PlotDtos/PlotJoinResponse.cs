@@ -14,6 +14,6 @@ namespace b8vB6mN3zAe.Dtos
         public required decimal Width { get; set; }
         public required decimal Length { get; set; }
         public required ExploitationType Type { get; set; }
-        public List<PostionResponse> Positions { get; set; } = new List<PostionResponse>();
+        public List<PostionResponse?> Positions { get; set; } = new List<PostionResponse?>();
     }
 }

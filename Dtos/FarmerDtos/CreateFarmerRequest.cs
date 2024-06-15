@@ -4,11 +4,9 @@ namespace b8vB6mN3zAe.Dtos
 {
     public class CreateFarmerRequest
     {
-        [Required(ErrorMessage = "FirstName is required")]
-        public required String FirstName { get; set; }
-        
-        [Required(ErrorMessage = "LastName is required")]
-        public required String LastName { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        public required String FullName { get; set; }
+    
         
         [Required(ErrorMessage = "Address is required")]
         public required String Address { get; set; }

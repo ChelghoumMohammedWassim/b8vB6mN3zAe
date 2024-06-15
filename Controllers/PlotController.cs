@@ -32,7 +32,9 @@ namespace b8vB6mN3zAe.Controllers
                 Include(plot => plot.Positions).
                 Include(plot => plot.Exploitation).
                 ThenInclude(exploitation=> exploitation.Land).
-                ThenInclude(land=> land.Farmer)
+                ThenInclude(land=> land.Farmer).
+                Include(plot => plot.Samples).
+                ThenInclude(sample=> sample.Analyses)
                 .Select(plot => plot.ToPlotResponseDto())
                 .ToListAsync();
 
@@ -57,6 +59,8 @@ namespace b8vB6mN3zAe.Controllers
                 Include(plot=> plot.Exploitation).
                 ThenInclude(exploitation=> exploitation.Land).
                 ThenInclude(land=> land.Farmer).
+                Include(plot => plot.Samples).
+                ThenInclude(sample=> sample.Analyses).
                 FirstOrDefaultAsync(plot => plot!.ID == id);
 
                 if (plot is null)

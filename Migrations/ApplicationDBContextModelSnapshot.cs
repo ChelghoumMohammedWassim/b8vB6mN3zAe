@@ -22,6 +22,107 @@ namespace b8vB6mN3zAe.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Analysis", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CActif")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CN")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CaCo3")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Carbonates")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Ce")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Clay")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("ExchangeableCalcium")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeableCalciumPPM")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeableMagnesium")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeableMagnesiumPPM")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeablePotassium")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeableSodium")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeableSodiumPPM")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeablepotassiumPPM")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("InterpretationMethod")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InterpretationRule")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Nitrogen")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("OrganicMaterial")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Ph")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Phosphorus")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("PhosphorusOlsen")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("PhosphorusOlsenPPM")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("SampleID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Sand")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Silt")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Texture")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SampleID");
+
+                    b.ToTable("Analysis");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
                     b.Property<int>("ID")
@@ -90,11 +191,7 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -414,6 +511,17 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("ZipCodes");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Analysis", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Sample", "Sample")
+                        .WithMany("Analyses")
+                        .HasForeignKey("SampleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sample");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
                     b.HasOne("b8vB6mN3zAe.Models.Sector", "Sector")
@@ -580,6 +688,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Positions");
 
                     b.Navigation("Samples");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
+                {
+                    b.Navigation("Analyses");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sector", b =>

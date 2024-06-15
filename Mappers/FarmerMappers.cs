@@ -9,8 +9,8 @@ namespace b8vB6mN3zAe.Mappers
         {
             return new Farmer
             {
-                FirstName = farmerRequest.FirstName,
-                LastName = farmerRequest.LastName,
+                FullName = farmerRequest.FullName,
+                
                 Address = farmerRequest.Address,
                 PhoneNumber = farmerRequest.PhoneNumber,
                 Email = farmerRequest.Email,
@@ -28,8 +28,7 @@ namespace b8vB6mN3zAe.Mappers
             return new FarmerResponse
             {
                 ID = farmer.ID,
-                FirstName = farmer.FirstName,
-                LastName = farmer.LastName,
+                FullName = farmer.FullName,
                 PhoneNumber = farmer.PhoneNumber,
                 Email = farmer.Email,
                 NCNA = farmer.NCNA,
@@ -48,8 +47,7 @@ namespace b8vB6mN3zAe.Mappers
             return new FarmerJoinResponse
             {
                 ID = farmer.ID,
-                FirstName = farmer.FirstName,
-                LastName = farmer.LastName,
+                FullName = farmer.FullName,
                 NCNA = farmer.NCNA
             };
         }

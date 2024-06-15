@@ -11,5 +11,6 @@ namespace b8vB6mN3zAe.Models
        
         public required String PlotID { get; set; }
         public Plot? Plot { get; set; }
+        public List<Analysis> Analyses { get; set; } = new List<Analysis>();
     }
 }
