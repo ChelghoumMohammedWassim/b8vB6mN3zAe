@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\My-Projects\\API\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj": {}
+    "C:\\Users\\Walid\\Documents\\Projects\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj": {}
   },
   "projects": {
-    "E:\\My-Projects\\API\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj": {
+    "C:\\Users\\Walid\\Documents\\Projects\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\My-Projects\\API\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj",
+        "projectUniqueName": "C:\\Users\\Walid\\Documents\\Projects\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj",
         "projectName": "b8vB6mN3zAe",
-        "projectPath": "E:\\My-Projects\\API\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj",
-        "packagesPath": "C:\\Users\\ch\\.nuget\\packages\\",
-        "outputPath": "E:\\My-Projects\\API\\b8vB6mN3zAe\\obj\\",
+        "projectPath": "C:\\Users\\Walid\\Documents\\Projects\\b8vB6mN3zAe\\b8vB6mN3zAe.csproj",
+        "packagesPath": "C:\\Users\\Walid\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Walid\\Documents\\Projects\\b8vB6mN3zAe\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ch\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Walid\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -129,7 +129,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

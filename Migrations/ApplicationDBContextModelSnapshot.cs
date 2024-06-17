@@ -34,9 +34,6 @@ namespace b8vB6mN3zAe.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("CaCo3")
-                        .HasColumnType("numeric");
-
                     b.Property<decimal>("Carbonates")
                         .HasColumnType("numeric");
 
@@ -74,14 +71,6 @@ namespace b8vB6mN3zAe.Migrations
 
                     b.Property<decimal>("ExchangeablepotassiumPPM")
                         .HasColumnType("numeric");
-
-                    b.Property<string>("InterpretationMethod")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("InterpretationRule")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<decimal>("Nitrogen")
                         .HasColumnType("numeric");

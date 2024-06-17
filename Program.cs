@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options=>
+builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
         Description = "Authorization header using bearer schema",
         In = ParameterLocation.Header,
         Name = "Authorization",
@@ -76,6 +77,14 @@ app.UseHttpsRedirection();
 //add auth middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Enable CORS
+app.UseCors(options =>
+{
+    options.AllowAnyOrigin();
+    options.AllowAnyMethod();
+    options.AllowAnyHeader();
+});
 
 //map controllers
 app.MapControllers();
