@@ -16,13 +16,10 @@ namespace b8vB6mN3zAe.Mappers
             return new AnalysisResponse
             {
                 ID = analysis.ID,
-                InterpretationMethod = analysis.InterpretationMethod,
-                InterpretationRule = analysis.InterpretationRule,
                 Ce = analysis.Ce,
                 Texture = analysis.Texture,
                 Ph = analysis.Ph,
                 CN = analysis.CN,
-                CaCo3 = analysis.CaCo3,
                 CActif = analysis.CActif,
                 OrganicMaterial = analysis.OrganicMaterial,
                 Nitrogen = analysis.Nitrogen,

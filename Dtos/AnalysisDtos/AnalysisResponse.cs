@@ -6,13 +6,10 @@ namespace b8vB6mN3zAe.Dtos
     public class AnalysisResponse
     {
         public String ID { get; set; }= Guid.NewGuid().ToString();
-        public required String InterpretationMethod { get; set; }
-        public required String InterpretationRule { get; set; }
-        public required String Ce { get; set; }
         public required String Texture { get; set; }
+        public required String Ce { get; set; }
         public required String Ph { get; set; }
         public required String CN { get; set; }
-        public required decimal CaCo3 { get; set; }
         public required decimal CActif { get; set; }
         public required decimal OrganicMaterial { get; set; }
         public required decimal Nitrogen { get; set; }
