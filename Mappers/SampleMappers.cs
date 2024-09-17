@@ -28,6 +28,25 @@ namespace b8vB6mN3zAe.Mappers
                 SamplingDate = sample.SamplingDate,
                 Status = sample.Status.ToString(),
                 Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
+                Plot = sample.Plot.ToJoinPlotResponseDto()
+
+            };
+        }
+
+
+        public static SampleJoinResponse? ToSampleJoinResponseDto(this Sample? sample)
+        {
+            if (sample is null)
+            {
+                return null;
+            }
+            return new SampleJoinResponse
+            {
+                ID = sample.ID,
+                Reference = sample.Reference,
+                SamplingDate = sample.SamplingDate,
+                Status = sample.Status.ToString(),
+                Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
 
             };
         }

@@ -1,17 +1,15 @@
+using b8vB6mN3zAe.Models;
 using b8vB6mN3zAe.Models.Enums;
 
-namespace b8vB6mN3zAe.Models
+namespace b8vB6mN3zAe.Dtos
 {
-    public class Analysis
+    public class AnalysisCreateRequest
     {
-        public String ID { get; set; }= Guid.NewGuid().ToString();
         public required String Ce { get; set; }
         public required String Texture { get; set; }
         public required String Ph { get; set; }
         public required String CN { get; set; }
         public required decimal CActif { get; set; }
-
-
         public required decimal OrganicMaterial { get; set; }
         public required decimal Nitrogen { get; set; }
         public required decimal Carbonates { get; set; }
@@ -29,9 +27,6 @@ namespace b8vB6mN3zAe.Models
         public required decimal Sand { get; set; }
         public required decimal Clay { get; set; }
         public required decimal Silt { get; set; }
-        public String Date { get; set; } = DateTime.Now.ToString();
         public required String SampleID { get; set; }
-        public  Sample? Sample { get; set; }
-
     }
 }

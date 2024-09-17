@@ -1,3 +1,4 @@
+using System.Collections;
 using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Dtos.UserDtos;
@@ -41,7 +42,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //get lab from db
-                Lab? dbLab = await _context.Labs.Include(lab=> lab.City).SingleOrDefaultAsync(lab => lab.ID == requestLabID);
+                Lab? dbLab = await _context.Labs.Include(lab => lab.City).SingleOrDefaultAsync(lab => lab.ID == requestLabID);
                 if (dbLab is null)
                 {
                     return NotFound("User Not Found.");
@@ -58,12 +59,13 @@ namespace b8vB6mN3zAe.Controllers
         [HttpGet]
         [Route("all")]
         [Authorize]
-        public async Task<IActionResult> GetAllLabForAdmin()
+        public async Task<IActionResult> GetAllLabs()
         {
             try
             {
-                //get user auth 
+                //decode token to get user id
                 string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
 
                 //get user id
                 String requestUserID = Token.DecodeToken(accessToken, _SECRETKEY);
@@ -73,12 +75,35 @@ namespace b8vB6mN3zAe.Controllers
                 }
                 //select labs 
                 var labs = await _context.Labs
-                .Include(lab=> lab.City)
-                .Include(lab=> lab.Sectors)
-                .Select(lab => lab.ToAdminLabsListResponseDto())
+                .Include(lab => lab.City)
+                .Include(lab => lab.Sectors)
+                .ThenInclude(sector => sector.Users)
+                // .Select(lab => lab.ToAdminLabsListResponseDto())
                 .ToListAsync();
 
-                return Ok(labs);
+                List<Lab> accessedLabs = new List<Lab>();
+
+                foreach (Lab l in labs)
+                {
+                    List<User?> allowedUsers = new List<User?>();
+
+                    foreach (Sector? s in l.Sectors)
+                    {
+                        if (s.Users is not null)
+                        {
+                            allowedUsers.AddRange(s.Users);
+                        }
+                    }
+
+                    if (Utils.UserHaveAccess(allowedUsers, accessUserId, _context))
+                    {
+                        accessedLabs.Add(l);
+                    }
+
+                }
+
+
+                return Ok(accessedLabs.Select(lab => lab.ToLabResponseDto()));
             }
             catch (Exception)
             {
@@ -93,8 +118,9 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
-                //get user auth 
+                //decode token to get user id
                 string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
 
                 //get user id
                 String requestUserID = Token.DecodeToken(accessToken, _SECRETKEY);
@@ -104,17 +130,34 @@ namespace b8vB6mN3zAe.Controllers
                 }
                 //select lab
                 var lab = await _context.Labs
-                .Include(lab=> lab.City)
+                .Include(lab => lab.City)
                 .Include(lab => lab.Sectors)
+                .ThenInclude(sector => sector.Users)
                 .FirstOrDefaultAsync(lab => lab.ID == id);
+
 
                 if (lab is null)
                 {
                     return NotFound("Lab not Found");
                 }
 
+                List<User?> allowedUsers = new List<User?>();
 
-                return Ok(lab.ToAdminLabsListResponseDto());
+                foreach (Sector? s in lab.Sectors)
+                {
+                    if (s.Users is not null)
+                    {
+                        allowedUsers.AddRange(s.Users);
+                    }
+                }
+
+                if (!Utils.UserHaveAccess(allowedUsers, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
+                }
+
+
+                return Ok(lab.ToLabResponseDto());
             }
             catch (Exception)
             {
@@ -189,8 +232,8 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(labRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(labRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }
@@ -239,8 +282,8 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(labRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(labRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }
@@ -269,7 +312,7 @@ namespace b8vB6mN3zAe.Controllers
                 {
                     dbLab.Password = BCrypt.Net.BCrypt.HashPassword(labRequest.NewPassword);
                 }
-                
+
                 await _context.SaveChangesAsync();
 
                 return Ok("Lab Updated.");
@@ -303,8 +346,8 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check city if exist
-                City? city= await _context.Cities.FindAsync(labRequest.City);
-                if(city is null)
+                City? city = await _context.Cities.FindAsync(labRequest.City);
+                if (city is null)
                 {
                     return NotFound("City not found.");
                 }

@@ -29,5 +29,7 @@ namespace b8vB6mN3zAe.Dtos
         public required decimal Clay { get; set; }
         public required decimal Silt { get; set; }
         public required String Date { get; set; }
+        public required SampleJoinResponse Sample { get; set; }
+
     }
 }

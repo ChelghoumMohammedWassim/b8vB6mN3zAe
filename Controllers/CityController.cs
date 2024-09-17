@@ -1,6 +1,7 @@
 using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
-        public CityController(ApplicationDBContext context)
+        public CityController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
@@ -27,17 +30,34 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+
                 //get cities from db
                 var cities = await _context.Cities.
                             Include(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
                             Include(city => city.ZipCodes).
                             OrderBy(city => city.ID).
-                            Select(city => city.ToCityResponseDto()).
                             ToArrayAsync();
 
-                return Ok(cities);
+                // Filter the cities based on user access 
+                var accessibleCities = cities
+                    .Where(city => Utils.UserHaveAccess(city?.Sector?.Users, accessUserId, _context))
+                    .Select(city => city.ToCityResponseDto())
+                    .ToArray();
+
+                return Ok(accessibleCities);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500, "Internal Server error.");
             }
@@ -50,16 +70,33 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
                 //get cities from db
                 var city = await _context.Cities.
                             Include(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
                             Include(city => city.ZipCodes).
                             Include(city => city.ZipCodes).
                             FirstOrDefaultAsync(city => city.ID == id);
 
+
                 if (city is null)
                 {
                     return NotFound("city not Found");
+                }
+
+                if (!Utils.UserHaveAccess(city.Sector.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(city.ToCityResponseDto());
@@ -72,8 +109,8 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> CreateCity(UpdateCityRequest cityRequest)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateCity(UpdateCityRequest cityRequest)
         {
             try
             {
@@ -95,7 +132,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 if (dbCity is null)
                 {
-                    return NotFound("City Not found");
+                    return NotFound("City Not found.");
                 }
 
                 //check sector if exist 
@@ -121,7 +158,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCity(CreateCityRequest cityRequest)
         {
             try
@@ -165,7 +202,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCity([FromHeader] int id)
         {
             try
@@ -182,7 +219,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 if (dbCity is null)
                 {
-                    return NotFound("City Not found");
+                    return NotFound("City Not found.");
                 }
                 _context.Cities.Remove(dbCity);
                 await _context.SaveChangesAsync();

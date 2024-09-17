@@ -2,6 +2,7 @@ using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
 using b8vB6mN3zAe.Tools;
+using static b8vB6mN3zAe.Tools.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,44 +25,38 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
-        [Route("all")]
-        [Authorize]
-        public async Task<IActionResult> GetAllSector()
-        {
-            try
-            {
-                var sectors = await _context.Sectors
-                .Include(city => city.Lab)
-                .Include(city => city.Cities)
-                .Include(city => city.Lab.City)
-                .Select(city => city.ToSectorResponseDto())
-                .ToArrayAsync();
-
-                return Ok(sectors);
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
-        [HttpGet]
         [Route("id")]
         [Authorize]
         public async Task<IActionResult> GetSectorByID([FromHeader] string id)
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
                 var sector = await _context.Sectors
-                .Include(city => city.Lab)
-                .Include(city => city.Cities)
-                .Include(city => city.Lab.City)
-                .FirstOrDefaultAsync(city => city.ID == id);
+                .Include(sector => sector.Lab)
+                .Include(sector => sector.Cities)
+                .Include(sector => sector.Lab.City)
+                .Include(sector => sector.Users)
+                .FirstOrDefaultAsync(sector => sector.ID == id);
 
                 if (sector is null)
                 {
-                    return NotFound("Sector not Found");
+                    return NotFound("Sector not Found.");
+                }
+
+
+                if (!UserHaveAccess(sector.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(sector.ToSectorResponseDto());
@@ -75,28 +70,36 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
-        [Route("token")]
+        [Route("all")]
         [Authorize]
-        public async Task<IActionResult> GetSectorByUserToken()
+        public async Task<IActionResult> GetSectors()
         {
             try
             {
                 //decode token to get user id
                 string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
                 string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
-                if(accessUserId is null)
+
+                if (accessUserId is null)
                 {
-                    return Unauthorized("Invalid token");
+                    return Unauthorized("Invalid token.");
                 }
 
                 var sectors = await _context.Sectors
-                .Include(city => city.Lab)
-                .Include(city => city.Cities)
-                .Include(city => city.Lab.City)
-                .Select(city => city.ToSectorResponseDto())
+                .Include(sector => sector.Lab)
+                .Include(sector => sector.Cities)
+                .Include(sector => sector.Lab.City)
+                .Include(sector => sector.Users)
                 .ToArrayAsync();
 
-                return Ok(sectors);
+
+                var accessibleSectors = sectors
+                    .Where(sector => Utils.UserHaveAccess(sector.Users, accessUserId, _context))
+                    .Select(sector => sector.ToSectorResponseDto())
+                    .ToArray();
+
+
+                return Ok(accessibleSectors);
 
             }
             catch (Exception)
@@ -107,8 +110,8 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CreateCity(CreateSectorRequest sectorRequest)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateSector(CreateSectorRequest sectorRequest)
         {
             try
             {
@@ -149,7 +152,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateSector(UpdateSectorRequest sectorRequest)
         {
             try
@@ -201,7 +204,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteSector([FromHeader] String id)
         {
             try
@@ -213,12 +216,12 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
 
-                //get city from db 
+                //get sector from db 
                 var dbSector = await _context.Sectors.FindAsync(id);
 
                 if (dbSector is null)
                 {
-                    return NotFound("Sector Not found");
+                    return NotFound("Sector Not found.");
                 }
                 _context.Sectors.Remove(dbSector);
                 await _context.SaveChangesAsync();

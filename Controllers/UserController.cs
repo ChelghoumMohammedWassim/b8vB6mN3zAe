@@ -63,7 +63,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllForAdmin()
         {
             try
@@ -96,7 +96,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserByID([FromHeader] string id)
         {
             try
@@ -119,7 +119,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 if (user is null)
                 {
-                    return NotFound("User not Found");
+                    return NotFound("User not Found.");
                 }
 
                 return Ok(user.ToAdminUsersListResponseDto());
@@ -149,13 +149,13 @@ namespace b8vB6mN3zAe.Controllers
                 //user doesn't exist
                 if (dbUser is null)
                 {
-                    return Unauthorized("Bad user information");
+                    return Unauthorized("Bad user information.");
                 }
 
                 //check password
                 if (!BCrypt.Net.BCrypt.Verify(userRequest.Password, dbUser.Password))
                 {
-                    return Unauthorized("Bad user information");
+                    return Unauthorized("Bad user information.");
                 }
 
                 //check if the account is active
@@ -178,7 +178,8 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Route("register"), Authorize]
+        [Route("register")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register(CreateUserRequest userRequest)
         {
             try
@@ -293,7 +294,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserByID(AdminUpdateUserRequest userRequest)
         {
             try

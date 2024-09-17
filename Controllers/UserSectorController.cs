@@ -19,7 +19,7 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AffectSectorToUser(CreateUserSectorRequest userSectorRequest)
         {
             try
@@ -60,7 +60,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUserSectorRelation([FromHeader] int id)
         {
             try
@@ -77,7 +77,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 if (dbRelation is null)
                 {
-                    return NotFound("Relation Not found");
+                    return NotFound("Relation Not found.");
                 }
                 _context.UserSector.Remove(dbRelation);
                 await _context.SaveChangesAsync();

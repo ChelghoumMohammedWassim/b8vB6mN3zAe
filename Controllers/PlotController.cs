@@ -2,6 +2,7 @@ using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
-        public PlotController(ApplicationDBContext context)
+        public PlotController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
@@ -28,17 +31,31 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
-                var Plots = await _context.Plots.
-                Include(plot => plot.Positions).
-                Include(plot => plot.Exploitation).
-                ThenInclude(exploitation=> exploitation.Land).
-                ThenInclude(land=> land.Farmer).
-                Include(plot => plot.Samples).
-                ThenInclude(sample=> sample.Analyses)
-                .Select(plot => plot.ToPlotResponseDto())
-                .ToListAsync();
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
 
-                return Ok(Plots);
+                var plots = await _context.Plots.
+                        Include(plot => plot.Positions).
+                        Include(plot => plot.Exploitation).
+                        ThenInclude(exploitation => exploitation.Land).
+                        ThenInclude(land => land.Farmer).
+                        ThenInclude(farmer => farmer.ZipCode).
+                        ThenInclude(zipCode => zipCode.City).
+                        ThenInclude(city => city.Sector).
+                        ThenInclude(sector => sector.Users).
+                        Include(plot => plot.Samples).
+                        ThenInclude(sample => sample.Analyses)
+                        .ToListAsync();
+
+                var accessiblePlots = plots.Where(plot => Utils.UserHaveAccess(
+                                plot.Exploitation.Land.Farmer.ZipCode.City.Sector.Users,
+                                accessUserId,
+                                _context
+                            )).Select(plot => plot.ToJoinPlotResponseDto());
+
+
+                return Ok(accessiblePlots);
 
             }
             catch (Exception)
@@ -54,18 +71,32 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 var plot = await _context.Plots.
-                Include(plot=> plot.Positions).
-                Include(plot=> plot.Exploitation).
-                ThenInclude(exploitation=> exploitation.Land).
-                ThenInclude(land=> land.Farmer).
-                Include(plot => plot.Samples).
-                ThenInclude(sample=> sample.Analyses).
-                FirstOrDefaultAsync(plot => plot!.ID == id);
+                        Include(plot => plot.Positions).
+                        Include(plot => plot.Exploitation).
+                        ThenInclude(exploitation => exploitation.Land).
+                        ThenInclude(land => land.Farmer).
+                        ThenInclude(farmer => farmer.ZipCode).
+                        ThenInclude(zipCode => zipCode.City).
+                        ThenInclude(city => city.Sector).
+                        ThenInclude(sector => sector.Users).
+                        Include(plot => plot.Samples).
+                        ThenInclude(sample => sample.Analyses).
+                        FirstOrDefaultAsync(plot => plot!.ID == id);
 
                 if (plot is null)
                 {
                     return NotFound("plot Not found.");
+                }
+
+                if (!Utils.UserHaveAccess(plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(plot.ToPlotResponseDto());
@@ -80,7 +111,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> CreatePlot(CreatePlotRequest plotRequest)
         {
             try
@@ -115,7 +146,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
                 Plot newPlot = plotRequest.FromCreatePlotRequestDto();
-                
+
                 //add plot to db
                 await _context.Plots.AddAsync(newPlot);
 
@@ -138,28 +169,50 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> UpdatePlot(UpdatePlotRequest plotRequest)
         {
             try
             {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid request structure.");
                 }
 
-                var dbPlot = await _context.Plots.Include(plot=> plot.Positions).FirstOrDefaultAsync(land=> land.ID == plotRequest.ID);
-                if  (dbPlot is null)
+                var dbPlot = await _context.Plots.Include(plot => plot.Positions).FirstOrDefaultAsync(land => land.ID == plotRequest.ID);
+                if (dbPlot is null)
                 {
                     return NotFound("Plot Not Found.");
                 }
 
                 //check request farmer if exist 
-                var dbExploitation = await _context.Exploitations.FindAsync(plotRequest.ExploitationID);
+                var dbExploitation = await _context.Plots.
+                        Include(plot => plot.Positions).
+                        Include(plot => plot.Exploitation).
+                        ThenInclude(exploitation => exploitation.Land).
+                        ThenInclude(land => land.Farmer).
+                        ThenInclude(farmer => farmer.ZipCode).
+                        ThenInclude(zipCode => zipCode.City).
+                        ThenInclude(city => city.Sector).
+                        ThenInclude(sector => sector.Users).
+                        Include(plot => plot.Samples).
+                        ThenInclude(sample => sample.Analyses).
+                        FirstOrDefaultAsync(plot => plot!.ID == plotRequest.ExploitationID);
+                
                 if (dbExploitation is null)
                 {
                     return NotFound("Selected Exploitation not found.");
                 }
+
+                if (!Utils.UserHaveAccess(dbPlot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
+                }
+
 
                 // Check if a land with the same name already exists
                 var UsingNameOrPositionsPlot = await _context.Plots

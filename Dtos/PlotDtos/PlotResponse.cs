@@ -16,6 +16,6 @@ namespace b8vB6mN3zAe.Dtos
         public required ExploitationType Type { get; set; }
         public ExploitationJoinResponse? Exploitation { get; set; }
         public List<PostionResponse?> Positions { get; set; } = new List<PostionResponse?>();
-        public List<SampleResponse?> Samples { get; set; } =new List<SampleResponse?>();
+        public List<SampleJoinResponse?> Samples { get; set; } =new List<SampleJoinResponse?>();
     }
 }

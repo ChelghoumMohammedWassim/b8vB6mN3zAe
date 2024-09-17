@@ -265,8 +265,8 @@ namespace b8vB6mN3zAe.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Rainfall")
-                        .HasColumnType("integer");
+                    b.Property<double>("Rainfall")
+                        .HasColumnType("double precision");
 
                     b.HasKey("ID");
 

@@ -5,7 +5,7 @@ namespace b8vB6mN3zAe.Dtos
 {
     public class UpdateFarmerRequest
     {
-        public int ID { get; set; }
+        public string ID { get; set; }
         [Required(ErrorMessage = "FirstName is required")]
         public required String FirstName { get; set; }
 

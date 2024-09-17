@@ -2,6 +2,7 @@ using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
-        public LandController(ApplicationDBContext context)
+        public LandController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
@@ -28,12 +31,29 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
-                var lands = await _context.Lands.
-                Include(land => land.Farmer).
-                Include(land => land.Exploitations)
-                .Select(land => land.ToLandListResponseDto()).ToListAsync();
 
-                return Ok(lands);
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var lands = await _context.Lands.
+                Include(land => land.Exploitations)
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector)
+                .ThenInclude(sector => sector.Users).ToListAsync();
+
+                var accessibleLands = lands.
+                        Where(land => Utils.UserHaveAccess(land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)).
+                        Select(land => land.ToLandListResponseDto());
+
+                return Ok(accessibleLands);
 
             }
             catch (Exception)
@@ -49,14 +69,26 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
-                var lands = await _context.Lands.
-                Include(land => land.Farmer).
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                var lands = await _context.Lands
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector).
                 Include(land => land.Exploitations).
                 FirstOrDefaultAsync(land => land!.ID == id);
 
                 if (lands is null)
                 {
                     return NotFound("Land Not found.");
+                }
+
+                if (!Utils.UserHaveAccess(lands?.Farmer?.ZipCode?.City?.Sector?.Users, accessToken, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(lands.ToLandListResponseDto());
@@ -71,11 +103,12 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> CreateLand(LandCreateRequest landRequest)
         {
             try
             {
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid request structure.");
@@ -109,20 +142,38 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> UpdateLand(LandUpdateRequest landRequest)
         {
             try
             {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid request structure.");
                 }
 
-                var dbLand = await _context.Lands.FirstOrDefaultAsync(land=> land.ID == landRequest.ID);
-                if  (dbLand is null)
+                var dbLand = await _context.Lands
+                    .Include(land => land.Farmer)
+                    .ThenInclude(farmer => farmer.ZipCode)
+                    .ThenInclude(zipCode => zipCode.City)
+                    .ThenInclude(city => city.Sector).
+                    Include(land => land.Exploitations).
+                    FirstOrDefaultAsync(land => land!.ID == landRequest.ID);
+
+
+                if (dbLand is null)
                 {
                     return NotFound("Land Not Found.");
+                }
+
+
+                if (!Utils.UserHaveAccess(dbLand?.Farmer?.ZipCode?.City?.Sector?.Users, accessToken, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 //check request farmer if exist 

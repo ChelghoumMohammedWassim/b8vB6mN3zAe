@@ -1,6 +1,7 @@
 using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
-        public ZipCodeController(ApplicationDBContext context)
+        public ZipCodeController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
@@ -27,13 +30,22 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 //get cities from db
                 var zipCodes = await _context.ZipCodes.
                             Include(zipCode => zipCode.City).
-                            Select(zipCode => zipCode.ToZipCodeResponseDto()).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
                             ToArrayAsync();
 
-                return Ok(zipCodes);
+                var accessibleZipCode = zipCodes.
+                    Where(zipCode => Utils.UserHaveAccess(zipCode?.City?.Sector?.Users, accessUserId, _context)).
+                    Select(zipCode => zipCode.ToZipCodeResponseDto());
+
+                return Ok(accessibleZipCode);
             }
             catch (Exception)
             {
@@ -44,18 +56,29 @@ namespace b8vB6mN3zAe.Controllers
         [HttpGet]
         [Route("id")]
         [Authorize]
-        public async Task<IActionResult> GetZipCodeBy([FromHeader] String id)
+        public async Task<IActionResult> GetZipCodeByID([FromHeader] String id)
         {
             try
             {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 //get cities from db
                 var zipCode = await _context.ZipCodes.
                             Include(zipCode => zipCode.City).
+                            ThenInclude(zipCode => zipCode.Sector).
+                            ThenInclude(sector => sector.Users).
                             FirstOrDefaultAsync(zipCode => zipCode.ID == id);
 
                 if (zipCode is null)
                 {
                     return NotFound("ZipCode not Found");
+                }
+
+                if (!Utils.UserHaveAccess(zipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(zipCode.ToZipCodeResponseDto());
@@ -69,7 +92,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateZipCode(CreateZipCodeRequest zipCodeRequest)
         {
             try
@@ -94,7 +117,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //check sector if exist 
-                if (zipCodeRequest.CityID!= null)
+                if (zipCodeRequest.CityID != null)
                 {
                     var sector = await _context.Cities.FindAsync(zipCodeRequest.CityID);
                     if (sector is null)
@@ -119,7 +142,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateZipCode(UpdateZipCodeRequest zipCodeRequest)
         {
             try
@@ -136,7 +159,7 @@ namespace b8vB6mN3zAe.Controllers
                     ||
                     zipCode.Code == zipCodeRequest.Code
                     );
-               
+
                 if (usingNameAndCodeZipCode is not null && usingNameAndCodeZipCode.ID != zipCodeRequest.ID)
                 {
                     return Conflict("ZipCode info already exist.");
@@ -174,7 +197,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteZipCode([FromHeader] String id)
         {
             try

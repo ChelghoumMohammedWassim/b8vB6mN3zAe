@@ -119,6 +119,6 @@ namespace b8vB6mN3zAe.Database
                 public DbSet<Exploitation> Exploitations { get; set; }
                 public DbSet<Plot> Plots { get; set; }
                 public DbSet<Sample> Samples { get; set; }
-                public Analysis Analysis { get; set; }
+                public DbSet<Analysis> Analysis { get; set; }
         }
 }

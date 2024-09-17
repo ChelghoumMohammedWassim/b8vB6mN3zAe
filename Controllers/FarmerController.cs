@@ -2,6 +2,8 @@ using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
+using b8vB6mN3zAe.Models.Enums;
+using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,12 @@ namespace b8vB6mN3zAe.Controllers
     {
 
         private readonly ApplicationDBContext _context;
+        private readonly String _SECRETKEY;
 
-        public FarmerController(ApplicationDBContext context)
+        public FarmerController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _SECRETKEY = configuration["MySecretKey"];
         }
 
 
@@ -28,90 +32,38 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
                 //get farmers from db
                 var farmers = await _context.Farmers.
                             Include(farmer => farmer.ZipCode).
-                            Include(farmer=> farmer.Lands).
-                            Select(farmer => farmer.ToFarmerResponseDto()).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(farmer => farmer.Lands).
                             ToArrayAsync();
 
-                return Ok(farmers);
+                var accessibleFarmers = farmers.Where(farmer =>
+                        Utils.UserHaveAccess(farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)).
+                        Select(farmer => farmer.ToFarmerResponseDto());
+
+                return Ok(accessibleFarmers);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return StatusCode(500, "Internal Server error.");
+                return StatusCode(500, e.Message);
             }
         }
 
-        [HttpGet]
-        [Route("zipCode")]
-        [Authorize]
-        public async Task<IActionResult> GetFarmerByZipCode([FromHeader] String zipCodeID)
-        {
-            try
-            {
-                //get farmers from db
-                var farmers = await _context.Farmers.
-                            Where(farmer => farmer.ZipCodeID == zipCodeID).
-                            Include(farmer => farmer.ZipCode).
-                            Include(farmer=> farmer.Lands).
-                            Select(farmer => farmer.ToFarmerResponseDto()).
-                            ToArrayAsync();
 
-                return Ok(farmers);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server error.");
-            }
-        }
-
-        [HttpGet]
-        [Route("city")]
-        [Authorize]
-        public async Task<IActionResult> GetFarmerByCity([FromHeader] int cityID)
-        {
-            try
-            {
-                //get farmers from db
-                var farmers = await _context.Farmers.
-                            Include(farmer => farmer.ZipCode).
-                            Where(farmer => farmer.ZipCode.CityID == cityID).
-                            Include(farmer=> farmer.Lands).
-                            Select(farmer => farmer.ToFarmerResponseDto()).
-                            ToArrayAsync();
-
-                return Ok(farmers);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server error.");
-            }
-        }
-
-        [HttpGet]
-        [Route("sector")]
-        [Authorize]
-        public async Task<IActionResult> GetFarmerBySector([FromHeader] String sectoeID)
-        {
-            try
-            {
-                //get farmers from db
-                var farmers = await _context.Farmers.
-                            Include(farmer=> farmer.Lands).
-                            Include(farmer => farmer.ZipCode).
-                            ThenInclude(ZipCode => ZipCode.City).
-                            Where(farmer => farmer.ZipCode.City.SectorID == sectoeID).
-                            Select(farmer => farmer.ToFarmerResponseDto()).
-                            ToArrayAsync();
-
-                return Ok(farmers);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal Server error.");
-            }
-        }
 
         [HttpGet]
         [Route("id")]
@@ -120,16 +72,35 @@ namespace b8vB6mN3zAe.Controllers
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+
                 //get farmer from db
                 var farmer = await _context.Farmers.
-                            Include(farmer=> farmer.Lands).
+                            Include(farmer => farmer.Lands).
                             Include(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
                             FirstOrDefaultAsync(farmer => farmer.ID == id);
                 ;
 
                 if (farmer is null)
                 {
-                    return NotFound("Farmer not Found");
+                    return NotFound("Farmer not Found.");
+                }
+
+                if (!Utils.UserHaveAccess(farmer.ZipCode.City.Sector.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 return Ok(farmer.ToFarmerResponseDto());
@@ -142,11 +113,16 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> UpdateFarmer(UpdateFarmerRequest farmerRequest)
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 //check request structure
                 if (!ModelState.IsValid)
                 {
@@ -161,11 +137,21 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
                 //get farmer from db 
-                var dbFarmer = await _context.Farmers.FindAsync(farmerRequest.ID);
+                var dbFarmer = await _context.Farmers.
+                                Include(farmer => farmer.ZipCode).
+                                ThenInclude(zipCode => zipCode.City).
+                                ThenInclude(city => city.Sector).
+                                ThenInclude(sector => sector.Users).
+                                FirstOrDefaultAsync(farmer => farmer.ID == farmerRequest.ID);
 
                 if (dbFarmer is null)
                 {
-                    return NotFound("Farmer Not found");
+                    return NotFound("Farmer Not found.");
+                }
+
+                if (!Utils.UserHaveAccess(dbFarmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
                 }
 
                 //check zipCode if exist 
@@ -195,7 +181,7 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist")]
         public async Task<IActionResult> CreateFarmer(CreateFarmerRequest farmerRequest)
         {
             try
@@ -236,11 +222,16 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Agronomist")]
         public async Task<IActionResult> DeleteFarmer([FromHeader] String id)
         {
             try
             {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
                 //check request structure
                 if (!ModelState.IsValid)
                 {
@@ -248,15 +239,23 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
 
-                //get Farmer from db 
-                var dbFarmer = await _context.Farmers.FindAsync(id);
+                //get farmer from db 
+                var dbFarmer = await _context.Farmers.
+                                Include(farmer => farmer.ZipCode).
+                                ThenInclude(zipCode => zipCode.City).
+                                ThenInclude(city => city.Sector).
+                                ThenInclude(sector => sector.Users).
+                                FirstOrDefaultAsync(farmer => farmer.ID == id);
 
                 if (dbFarmer is null)
                 {
-                    return NotFound("Farmer Not found");
+                    return NotFound("Farmer Not found.");
                 }
 
-                //check if he have history
+                if (!Utils.UserHaveAccess(dbFarmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
+                }
 
                 _context.Farmers.Remove(dbFarmer);
                 await _context.SaveChangesAsync();
