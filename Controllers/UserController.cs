@@ -32,7 +32,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("token")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
             try
@@ -220,7 +220,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpPut]
         [Route("token")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> UpdateUserByToke(UpdateUserRequest userRequest)
         {
             try

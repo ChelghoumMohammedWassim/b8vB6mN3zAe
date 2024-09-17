@@ -25,7 +25,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetCities()
         {
             try
@@ -63,9 +63,53 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        [Route("sector")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetCitiesBySector([FromHeader] string sectorID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+
+                //get cities from db
+                var cities = await _context.Cities.
+                            Include(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(city => city.ZipCodes).
+                            OrderBy(city => city.ID).
+                            ToArrayAsync();
+
+                // Filter the cities based on user access 
+                var accessibleCities = cities
+                    .Where(city => Utils.UserHaveAccess(city?.Sector?.Users, accessUserId, _context) && city.SectorID == sectorID)
+                    .Select(city => city.ToCityResponseDto())
+                    .ToArray();
+
+                return Ok(accessibleCities);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+        
+        
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetCityBy([FromHeader] int id)
         {
             try

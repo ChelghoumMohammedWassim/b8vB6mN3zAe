@@ -26,7 +26,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetSamples()
         {
             try
@@ -66,8 +66,302 @@ namespace b8vB6mN3zAe.Controllers
         }
 
         [HttpGet]
+        [Route("plot")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByPlot([FromHeader] string plotID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                ) && sample.PlotID == plotID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("exploitation")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByExploitation([FromHeader] string exploitationID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample.Plot.ExploitationID == exploitationID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("land")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByLand([FromHeader] string landID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample.Plot.Exploitation.LandID == landID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("farmer")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByFarmer([FromHeader] string farmerID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample.Plot.Exploitation.Land.FarmerID == farmerID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("zipCode")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByZipCode([FromHeader] string zipCodeID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample.Plot.Exploitation.Land.Farmer.ZipCodeID == zipCodeID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("city")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesByCity([FromHeader] int cityID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.CityID == cityID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("sector")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesBySector([FromHeader] string sectorID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
+                    sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users,
+                    accessUserId,
+                    _context
+                )&& sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.SectorID == sectorID).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetSampleByID([FromHeader] string id)
         {
             try
@@ -252,8 +546,8 @@ namespace b8vB6mN3zAe.Controllers
                 {
                     return Unauthorized("Invalid access token.");
                 }
-                
-                
+
+
                 _context.Samples.Remove(dbSample);
                 await _context.SaveChangesAsync();
 

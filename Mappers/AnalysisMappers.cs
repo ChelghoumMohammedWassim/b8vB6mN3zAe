@@ -7,36 +7,38 @@ namespace b8vB6mN3zAe.Mappers
     {
 
 
-        public static Analysis FromAnalysisCreateRequest(this AnalysisCreateRequest analysisRequest){
+        public static Analysis FromAnalysisCreateRequest(this AnalysisCreateRequest analysisRequest)
+        {
 
-            return new Analysis{
-                CActif=analysisRequest.CActif,
-                Carbonates=analysisRequest.Carbonates,
-                Ce=analysisRequest.Ce,
-                Clay=analysisRequest.Clay,
-                CN=analysisRequest.CN,
-                ExchangeableCalcium=analysisRequest.ExchangeableCalcium,
-                ExchangeableCalciumPPM=analysisRequest.ExchangeableCalciumPPM,
-                ExchangeableMagnesium=analysisRequest.ExchangeableMagnesium,
-                ExchangeableMagnesiumPPM=analysisRequest.ExchangeableMagnesiumPPM,
-                ExchangeablePotassium=analysisRequest.ExchangeablePotassium,
-                ExchangeablepotassiumPPM=analysisRequest.ExchangeablepotassiumPPM,
-                ExchangeableSodium=analysisRequest.ExchangeableSodium,
-                ExchangeableSodiumPPM=analysisRequest.ExchangeableSodiumPPM,
-                Nitrogen=analysisRequest.Nitrogen,
-                OrganicMaterial=analysisRequest.OrganicMaterial,
-                Ph=analysisRequest.Ph,
-                Phosphorus=analysisRequest.Phosphorus,
-                PhosphorusOlsen=analysisRequest.PhosphorusOlsen,
-                PhosphorusOlsenPPM=analysisRequest.PhosphorusOlsenPPM,
-                SampleID=analysisRequest.SampleID,
-                Sand=analysisRequest.Sand,
-                Silt=analysisRequest.Silt,
-                Texture=analysisRequest.Texture,
+            return new Analysis
+            {
+                CActif = analysisRequest.CActif,
+                Carbonates = analysisRequest.Carbonates,
+                Ce = analysisRequest.Ce,
+                Clay = analysisRequest.Clay,
+                CN = analysisRequest.CN,
+                ExchangeableCalcium = analysisRequest.ExchangeableCalcium,
+                ExchangeableCalciumPPM = analysisRequest.ExchangeableCalciumPPM,
+                ExchangeableMagnesium = analysisRequest.ExchangeableMagnesium,
+                ExchangeableMagnesiumPPM = analysisRequest.ExchangeableMagnesiumPPM,
+                ExchangeablePotassium = analysisRequest.ExchangeablePotassium,
+                ExchangeablepotassiumPPM = analysisRequest.ExchangeablepotassiumPPM,
+                ExchangeableSodium = analysisRequest.ExchangeableSodium,
+                ExchangeableSodiumPPM = analysisRequest.ExchangeableSodiumPPM,
+                Nitrogen = analysisRequest.Nitrogen,
+                OrganicMaterial = analysisRequest.OrganicMaterial,
+                Ph = analysisRequest.Ph,
+                Phosphorus = analysisRequest.Phosphorus,
+                PhosphorusOlsen = analysisRequest.PhosphorusOlsen,
+                PhosphorusOlsenPPM = analysisRequest.PhosphorusOlsenPPM,
+                SampleID = analysisRequest.SampleID,
+                Sand = analysisRequest.Sand,
+                Silt = analysisRequest.Silt,
+                Texture = analysisRequest.Texture,
             };
 
         }
-        
+
 
         public static AnalysisResponse? ToAnalysisResponseDto(this Analysis? analysis)
         {
@@ -69,8 +71,9 @@ namespace b8vB6mN3zAe.Mappers
                 Sand = analysis.Sand,
                 Clay = analysis.Clay,
                 Silt = analysis.Silt,
-                Date = analysis.Date,         
-                Sample = analysis.Sample.ToSampleJoinResponseDto()       
+                Date = analysis.Date,
+                Sample = analysis.Sample.ToSampleJoinResponseDto(),
+                
             };
         }
 
@@ -106,8 +109,10 @@ namespace b8vB6mN3zAe.Mappers
                 Sand = analysis.Sand,
                 Clay = analysis.Clay,
                 Silt = analysis.Silt,
-                Date = analysis.Date,                
+                Date = analysis.Date,
+                
             };
+
         }
 
     }

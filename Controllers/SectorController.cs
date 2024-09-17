@@ -26,7 +26,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetSectorByID([FromHeader] string id)
         {
             try
@@ -71,7 +71,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetSectors()
         {
             try

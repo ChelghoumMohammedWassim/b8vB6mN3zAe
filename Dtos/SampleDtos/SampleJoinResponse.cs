@@ -8,7 +8,5 @@ namespace b8vB6mN3zAe.Dtos
         public required String Reference { get; set; }
         public required String SamplingDate { get; set; }
         public required String Status { get; set; }
-        public List<AnalysisResponse?> Analyses { get; set; } = new List<AnalysisResponse?>();
-
     }
 }

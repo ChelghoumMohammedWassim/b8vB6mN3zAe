@@ -25,7 +25,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetZipCodes()
         {
             try
@@ -53,9 +53,72 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("city")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetZipCodesByCity([FromHeader] int cityID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                //get cities from db
+                var zipCodes = await _context.ZipCodes.
+                            Include(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            ToArrayAsync();
+
+                var accessibleZipCode = zipCodes.
+                    Where(zipCode => Utils.UserHaveAccess(zipCode?.City?.Sector?.Users, accessUserId, _context) && zipCode.CityID==cityID).
+                    Select(zipCode => zipCode.ToZipCodeResponseDto());
+
+                return Ok(accessibleZipCode);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("sector")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetZipCodesBySector([FromHeader] string sectorID)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                //get cities from db
+                var zipCodes = await _context.ZipCodes.
+                            Include(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            ToArrayAsync();
+
+                var accessibleZipCode = zipCodes.
+                    Where(zipCode => Utils.UserHaveAccess(zipCode?.City?.Sector?.Users, accessUserId, _context) && zipCode.City.SectorID==sectorID).
+                    Select(zipCode => zipCode.ToZipCodeResponseDto());
+
+                return Ok(accessibleZipCode);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetZipCodeByID([FromHeader] String id)
         {
             try

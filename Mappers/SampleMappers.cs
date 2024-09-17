@@ -29,7 +29,6 @@ namespace b8vB6mN3zAe.Mappers
                 Status = sample.Status.ToString(),
                 Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
                 Plot = sample.Plot.ToJoinPlotResponseDto()
-
             };
         }
 
@@ -45,8 +44,7 @@ namespace b8vB6mN3zAe.Mappers
                 ID = sample.ID,
                 Reference = sample.Reference,
                 SamplingDate = sample.SamplingDate,
-                Status = sample.Status.ToString(),
-                Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
+                Status = sample.Status.ToString()
 
             };
         }

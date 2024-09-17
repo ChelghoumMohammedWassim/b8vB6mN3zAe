@@ -26,7 +26,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetLands()
         {
             try
@@ -62,9 +62,172 @@ namespace b8vB6mN3zAe.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("farmer")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetLandsByFarmer([FromHeader] string farmerID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var lands = await _context.Lands.
+                Include(land => land.Exploitations)
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector)
+                .ThenInclude(sector => sector.Users).ToListAsync();
+
+                var accessibleLands = lands.
+                        Where(land => Utils.UserHaveAccess(land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)
+                         && land.FarmerID == farmerID).
+                        Select(land => land.ToLandListResponseDto());
+
+                return Ok(accessibleLands);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("zipCode")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetLandsByZipCode([FromHeader] string zipCodeID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var lands = await _context.Lands.
+                Include(land => land.Exploitations)
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector)
+                .ThenInclude(sector => sector.Users).ToListAsync();
+
+                var accessibleLands = lands.
+                        Where(land => Utils.UserHaveAccess(land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)
+                         && land.Farmer.ZipCodeID == zipCodeID).
+                        Select(land => land.ToLandListResponseDto());
+
+                return Ok(accessibleLands);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("city")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetLandsByCity([FromHeader] int cityID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var lands = await _context.Lands.
+                Include(land => land.Exploitations)
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector)
+                .ThenInclude(sector => sector.Users).ToListAsync();
+
+                var accessibleLands = lands.
+                        Where(land => Utils.UserHaveAccess(land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)
+                         && land.Farmer.ZipCode.CityID == cityID).
+                        Select(land => land.ToLandListResponseDto());
+
+                return Ok(accessibleLands);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+        [HttpGet]
+        [Route("sector")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetLandsBySector([FromHeader] string sectorID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var lands = await _context.Lands.
+                Include(land => land.Exploitations)
+                .Include(land => land.Farmer)
+                .ThenInclude(farmer => farmer.ZipCode)
+                .ThenInclude(zipCode => zipCode.City)
+                .ThenInclude(city => city.Sector)
+                .ThenInclude(sector => sector.Users).ToListAsync();
+
+                var accessibleLands = lands.
+                        Where(land => Utils.UserHaveAccess(land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)
+                         && land.Farmer.ZipCode.City.SectorID == sectorID).
+                        Select(land => land.ToLandListResponseDto());
+
+                return Ok(accessibleLands);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+
+
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetLandByID([FromHeader] String id)
         {
             try

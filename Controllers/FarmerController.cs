@@ -27,7 +27,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("all")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetFarmer()
         {
             try
@@ -64,10 +64,127 @@ namespace b8vB6mN3zAe.Controllers
         }
 
 
+        [HttpGet]
+        [Route("zipCode")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetFarmerByZipCode([FromHeader] string zipCodeID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                //get farmers from db
+                var farmers = await _context.Farmers.
+                            Include(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(farmer => farmer.Lands).
+                            ToArrayAsync();
+
+                var accessibleFarmers = farmers.Where(farmer =>
+                        Utils.UserHaveAccess(farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context) && farmer.ZipCodeID == zipCodeID).
+                        Select(farmer => farmer.ToFarmerResponseDto());
+
+                return Ok(accessibleFarmers);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("city")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetFarmerByCity([FromHeader] int cityID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                //get farmers from db
+                var farmers = await _context.Farmers.
+                            Include(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(farmer => farmer.Lands).
+                            ToArrayAsync();
+
+                var accessibleFarmers = farmers.Where(farmer =>
+                        Utils.UserHaveAccess(farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context) && farmer.ZipCode.CityID == cityID).
+                        Select(farmer => farmer.ToFarmerResponseDto());
+
+                return Ok(accessibleFarmers);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("sector")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetFarmerBySector([FromHeader] string sectorID)
+        {
+            try
+            {
+
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                if (accessUserId is null)
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                //get farmers from db
+                var farmers = await _context.Farmers.
+                            Include(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(farmer => farmer.Lands).
+                            ToArrayAsync();
+
+                var accessibleFarmers = farmers.Where(farmer =>
+                        Utils.UserHaveAccess(farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context) && farmer.ZipCode.City.SectorID == sectorID).
+                        Select(farmer => farmer.ToFarmerResponseDto());
+
+                return Ok(accessibleFarmers);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
 
         [HttpGet]
         [Route("id")]
-        [Authorize]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetFarmerBy([FromHeader] String id)
         {
             try
