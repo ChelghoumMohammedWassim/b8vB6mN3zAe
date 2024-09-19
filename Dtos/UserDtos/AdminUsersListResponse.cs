@@ -14,7 +14,7 @@ namespace b8vB6mN3zAe.Dtos
         public required String Email { get; set; }
         public required String Role { get; set; }
         public required bool IsActive { get; set; }
-        public required List<UserSectorResponse>? Sectors { get; set; }= new List<UserSectorResponse>();
+        public required List<UserSectorResponse?> Sectors { get; set; }= new List<UserSectorResponse?>();
         public required String CreatedDate { get; set; }
     }
 }

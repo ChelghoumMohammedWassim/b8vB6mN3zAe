@@ -33,5 +33,7 @@ namespace b8vB6mN3zAe.Dtos
         public String? Date { get; set; } = DateTime.Now.ToString();
         public  SampleJoinResponse? Sample { get; set; }
 
+        public required AnalysisStatus Status { get; set; }
+
     }
 }

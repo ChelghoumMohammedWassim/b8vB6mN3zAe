@@ -24,8 +24,8 @@ namespace b8vB6mN3zAe.Mappers
             {
                 ID = city.ID,
                 Name = city.Name,
-                Sector = city.Sector.ToSectorJoinResponseDto(),
-                ZipCodes = city.ZipCodes.Select(zipCode=> zipCode.ToZipCodeJoinResponseDto()).ToList()
+                Sector = city?.Sector?.ToSectorJoinResponseDto(),
+                ZipCodes = city!.ZipCodes.Select(zipCode=> zipCode?.ToZipCodeJoinResponseDto()).ToList()
             };
         }
 

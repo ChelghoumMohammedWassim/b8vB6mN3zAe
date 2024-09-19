@@ -16,5 +16,6 @@ namespace b8vB6mN3zAe.Models
         public bool IsActive { get; set; } = true;
         public String CreatedDate { get; set; } = DateTime.Now.ToString();
         public List<Sector> Sectors { get; set; }= new List<Sector>();
+        public List<Sample> Samples { get; set; } = new List<Sample>();
     }
 }

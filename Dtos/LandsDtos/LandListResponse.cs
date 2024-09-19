@@ -8,8 +8,8 @@ namespace b8vB6mN3zAe.Dtos
         public required string Name { get; set; }
         public required double Rainfall { get; set; }
 
-        public required FarmerJoinResponse Farmer { get; set; }
-        public List<ExploitationListResponse> Exploitations { get; set; } = new List<ExploitationListResponse>();
+        public required FarmerJoinResponse? Farmer { get; set; }
+        public List<ExploitationListResponse?> Exploitations { get; set; } = new List<ExploitationListResponse?>();
 
     }
 }

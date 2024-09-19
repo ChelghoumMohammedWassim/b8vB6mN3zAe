@@ -103,6 +103,43 @@ namespace b8vB6mN3zAe.Database
                                 .HasForeignKey(analyses => analyses.SampleID)
                                 .IsRequired();
 
+                        //relation Recommendation to RecommendedFertilizers
+                        modelBuilder.Entity<Recommendation>()
+                                .HasMany(recommendation => recommendation.RecommendedFertilizers)
+                                .WithOne(recommendedFertilizers => recommendedFertilizers.Recommendation)
+                                .HasForeignKey(recommendedFertilizers => recommendedFertilizers.RecommendationID)
+                                .IsRequired();
+                        
+
+                        //relation Fertilizer to RecommendedFertilizers
+                        modelBuilder.Entity<Fertilizer>()
+                                .HasMany(fertilizer => fertilizer.RecommendedFertilizers)
+                                .WithOne(recommendedFertilizers => recommendedFertilizers.Fertilizer)
+                                .HasForeignKey(recommendedFertilizers => recommendedFertilizers.FertilizerID)
+                                .IsRequired();
+
+                        //relation Analysis to Recommendation
+                        modelBuilder.Entity<Analysis>()
+                                .HasMany(analysis => analysis.Recommendations)
+                                .WithOne(recommendation => recommendation.Analysis)
+                                .HasForeignKey(recommendation => recommendation.AnalysisID)
+                                .IsRequired();
+
+                        
+                        //relation Sample to Lab
+                        modelBuilder.Entity<Lab>()
+                                .HasMany(lab => lab.Samples)
+                                .WithOne(sample => sample.Lab)
+                                .HasForeignKey(sample => sample.LabID)
+                                .IsRequired();
+
+                        //relation Sample to Lab
+                        modelBuilder.Entity<User>()
+                                .HasMany(user => user.Recommendations)
+                                .WithOne(recommendation => recommendation.User)
+                                .HasForeignKey(recommendation => recommendation.UserID)
+                                .IsRequired();
+
 
 
                 }
@@ -120,5 +157,8 @@ namespace b8vB6mN3zAe.Database
                 public DbSet<Plot> Plots { get; set; }
                 public DbSet<Sample> Samples { get; set; }
                 public DbSet<Analysis> Analysis { get; set; }
+                public DbSet<Recommendation> Recommendations { get; set; }
+                public DbSet<RecommendedFertilizer> RecommendedFertilizers { get; set; }
+                public DbSet<Fertilizer> Fertilizers { get; set; }
         }
 }

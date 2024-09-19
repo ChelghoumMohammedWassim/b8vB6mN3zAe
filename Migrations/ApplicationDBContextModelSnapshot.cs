@@ -101,6 +101,9 @@ namespace b8vB6mN3zAe.Migrations
                     b.Property<decimal>("Silt")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Texture")
                         .IsRequired()
                         .HasColumnType("text");
@@ -200,6 +203,77 @@ namespace b8vB6mN3zAe.Migrations
                     b.HasIndex("ZipCodeID");
 
                     b.ToTable("Farmers");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Fertilizer", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Ammoniacal")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("CaO")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Cl")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ConductivityMax")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Density")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Fe")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("FertilizerType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("K2O")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MgO")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Mn")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("N")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Nitric")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("P2O5")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ReactionType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("S")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Solubility")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SubType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Ureic")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Zn")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Fertilizers");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
@@ -345,9 +419,67 @@ namespace b8vB6mN3zAe.Migrations
                     b.ToTable("Positions");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Recommendation", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AnalysisID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Goal")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AnalysisID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Recommendations");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.RecommendedFertilizer", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FertilizerID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<string>("RecommendationID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("FertilizerID");
+
+                    b.HasIndex("RecommendationID");
+
+                    b.ToTable("RecommendedFertilizers");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
                 {
                     b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LabID")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PlotID")
@@ -366,6 +498,8 @@ namespace b8vB6mN3zAe.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("LabID");
 
                     b.HasIndex("PlotID");
 
@@ -585,13 +719,59 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Plot");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Recommendation", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Analysis", "Analysis")
+                        .WithMany("Recommendations")
+                        .HasForeignKey("AnalysisID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("b8vB6mN3zAe.Models.User", "User")
+                        .WithMany("Recommendations")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Analysis");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.RecommendedFertilizer", b =>
+                {
+                    b.HasOne("b8vB6mN3zAe.Models.Fertilizer", "Fertilizer")
+                        .WithMany("RecommendedFertilizers")
+                        .HasForeignKey("FertilizerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("b8vB6mN3zAe.Models.Recommendation", "Recommendation")
+                        .WithMany("RecommendedFertilizers")
+                        .HasForeignKey("RecommendationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fertilizer");
+
+                    b.Navigation("Recommendation");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
                 {
+                    b.HasOne("b8vB6mN3zAe.Models.Lab", "Lab")
+                        .WithMany("Samples")
+                        .HasForeignKey("LabID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("b8vB6mN3zAe.Models.Plot", "Plot")
                         .WithMany("Samples")
                         .HasForeignKey("PlotID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lab");
 
                     b.Navigation("Plot");
                 });
@@ -643,6 +823,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Analysis", b =>
+                {
+                    b.Navigation("Recommendations");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.City", b =>
                 {
                     b.Navigation("Labs");
@@ -662,8 +847,15 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Lands");
                 });
 
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Fertilizer", b =>
+                {
+                    b.Navigation("RecommendedFertilizers");
+                });
+
             modelBuilder.Entity("b8vB6mN3zAe.Models.Lab", b =>
                 {
+                    b.Navigation("Samples");
+
                     b.Navigation("Sectors");
                 });
 
@@ -677,6 +869,11 @@ namespace b8vB6mN3zAe.Migrations
                     b.Navigation("Positions");
 
                     b.Navigation("Samples");
+                });
+
+            modelBuilder.Entity("b8vB6mN3zAe.Models.Recommendation", b =>
+                {
+                    b.Navigation("RecommendedFertilizers");
                 });
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.Sample", b =>
@@ -693,6 +890,8 @@ namespace b8vB6mN3zAe.Migrations
 
             modelBuilder.Entity("b8vB6mN3zAe.Models.User", b =>
                 {
+                    b.Navigation("Recommendations");
+
                     b.Navigation("UsersSectors");
                 });
 

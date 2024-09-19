@@ -10,7 +10,9 @@ namespace b8vB6mN3zAe.Dtos
         public required String Status { get; set; }
         public List<AnalysisResponse?> Analyses { get; set; } = new List<AnalysisResponse?>();
 
-        public required PlotJoinResponse Plot { get; set; }
+        public required PlotJoinResponse? Plot { get; set; }
+
+        public required LabJoinResponse? Lab { get; set; }
 
     }
 }

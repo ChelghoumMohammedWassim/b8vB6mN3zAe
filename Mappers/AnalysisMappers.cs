@@ -73,6 +73,7 @@ namespace b8vB6mN3zAe.Mappers
                 Silt = analysis.Silt,
                 Date = analysis.Date,
                 Sample = analysis.Sample.ToSampleJoinResponseDto(),
+                Status = analysis.Status
                 
             };
         }
@@ -110,7 +111,7 @@ namespace b8vB6mN3zAe.Mappers
                 Clay = analysis.Clay,
                 Silt = analysis.Silt,
                 Date = analysis.Date,
-                
+                Status = analysis.Status,
             };
 
         }

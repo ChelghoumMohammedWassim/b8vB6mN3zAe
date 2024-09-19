@@ -23,7 +23,7 @@ namespace b8vB6mN3zAe.Mappers
             {
                 ID = userSectorRequest.ID,
                 CreatedDate = userSectorRequest.CreatedDate,
-                Sector = userSectorRequest.Sector.ToSectorJoinResponseDto()
+                Sector = userSectorRequest?.Sector?.ToSectorJoinResponseDto()
             };
         }
 

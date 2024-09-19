@@ -31,7 +31,7 @@ namespace b8vB6mN3zAe.Dtos
         public required decimal? Clay { get; set; }
         public required decimal? Silt { get; set; }
         public String? Date { get; set; } = DateTime.Now.ToString();
-
+        public required AnalysisStatus Status { get; set; }
 
     }
 }

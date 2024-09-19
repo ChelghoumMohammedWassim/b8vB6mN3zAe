@@ -19,5 +19,6 @@ namespace b8vB6mN3zAe.Models
         public City? City { get; set; }
         public List<Sector> Sectors { get; set; } = new List<Sector>();
         public List<UserSector> UsersSectors { get; set; } = [];
+        public List<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
     }
 }

@@ -10,8 +10,6 @@ namespace b8vB6mN3zAe.Models
         public required String Ph { get; set; }
         public required String CN { get; set; }
         public required decimal CActif { get; set; }
-
-
         public required decimal OrganicMaterial { get; set; }
         public required decimal Nitrogen { get; set; }
         public required decimal Carbonates { get; set; }
@@ -32,6 +30,8 @@ namespace b8vB6mN3zAe.Models
         public String Date { get; set; } = DateTime.Now.ToString();
         public required String SampleID { get; set; }
         public  Sample? Sample { get; set; }
+        public AnalysisStatus Status { get; set; } = AnalysisStatus.Pending;
+        public List<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
 
     }
 }

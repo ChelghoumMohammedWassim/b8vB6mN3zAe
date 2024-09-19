@@ -12,6 +12,7 @@ namespace b8vB6mN3zAe.Mappers
                 Reference= sampleRequest.Reference,
                 SamplingDate= sampleRequest.SamplingDate.ToString(),
                 PlotID= sampleRequest.PlotID,
+                LabID = sampleRequest.LabID,
             };
         }
 
@@ -28,7 +29,8 @@ namespace b8vB6mN3zAe.Mappers
                 SamplingDate = sample.SamplingDate,
                 Status = sample.Status.ToString(),
                 Analyses = sample.Analyses.Select(x => x.ToAnalysisResponseDto()).ToList(),
-                Plot = sample.Plot.ToJoinPlotResponseDto()
+                Plot = sample.Plot.ToJoinPlotResponseDto(),
+                Lab  = sample.Lab.ToLabJoinResponseDto(),
             };
         }
 

@@ -25,6 +25,90 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpGet]
+        [Route("all-for-labs")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSamplesForLabs()
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get samples from db
+                var samples = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
+                            OrderBy(samples => samples.SamplingDate).
+                            ToArrayAsync();
+
+                var accessibleSample = samples.Where(sample => sample.LabID == accessUserId).Select(sample => sample.ToSampleResponseDto());
+
+
+                return Ok(accessibleSample);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("id-for-labs")]
+        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        public async Task<IActionResult> GetSampleByIDFroLab([FromHeader] string id)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+
+                //get cities from db
+                var sample = await _context.Samples.
+                            Include(sample => sample.Plot).
+                            ThenInclude(plot => plot.Exploitation).
+                            ThenInclude(exploitation => exploitation.Land).
+                            ThenInclude(land => land.Farmer).
+                            ThenInclude(farmer => farmer.ZipCode).
+                            ThenInclude(zipCode => zipCode.City).
+                            ThenInclude(city => city.Sector).
+                            ThenInclude(sector => sector.Users).
+                            Include(sample => sample.Lab ).
+                            Include(samples => samples.Analyses).
+                            FirstOrDefaultAsync(sample => sample.ID == id);
+
+                if (sample is null)
+                {
+                    return NotFound("sample not Found");
+                }
+
+                if (!(sample.LabID == accessUserId))
+                {
+                    return Unauthorized("Invalid access token.");
+                }
+
+                return Ok(sample.ToSampleResponseDto());
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server error.");
+            }
+        }
+
+
+        [HttpGet]
         [Route("all")]
         [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
         public async Task<IActionResult> GetSamples()
@@ -47,6 +131,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -88,6 +173,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -130,6 +216,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -172,6 +259,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -214,6 +302,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -256,6 +345,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -299,6 +389,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
                             OrderBy(samples => samples.SamplingDate).
+                            Include(sample => sample.Lab ).
                             ToArrayAsync();
 
                 var accessibleSample = samples.Where(sample => Utils.UserHaveAccess(
@@ -340,6 +431,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             OrderBy(samples => samples.SamplingDate).
                             ToArrayAsync();
 
@@ -382,6 +474,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             FirstOrDefaultAsync(sample => sample.ID == id);
 
                 if (sample is null)
@@ -432,6 +525,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
                             Include(samples => samples.Analyses).
+                            Include(sample => sample.Lab ).
                             FirstOrDefaultAsync(sample => sample.ID == sampleRequest.ID);
 
                 if (dbSample is null)
@@ -533,6 +627,7 @@ namespace b8vB6mN3zAe.Controllers
                             ThenInclude(zipCode => zipCode.City).
                             ThenInclude(city => city.Sector).
                             ThenInclude(sector => sector.Users).
+                            Include(sample => sample.Lab ).
                             Include(samples => samples.Analyses).
                             FirstOrDefaultAsync(sample => sample.ID == id);
 

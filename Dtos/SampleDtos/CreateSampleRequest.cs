@@ -7,5 +7,6 @@ namespace b8vB6mN3zAe.Dtos
         public required String Reference { get; set; }
         public required DateTime SamplingDate { get; set; }       
         public required String PlotID { get; set; }
+        public required String LabID { get; set; }
     }
 }

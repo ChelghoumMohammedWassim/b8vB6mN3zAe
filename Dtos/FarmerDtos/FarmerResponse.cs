@@ -11,6 +11,6 @@ namespace b8vB6mN3zAe.Dtos
         public required String? Email { get; set; }
         public required String NCNA { get; set; }
         public ZipCodeJoinResponse? ZipCode { get; set; }
-        public required List<LandJoinResponse> Lands { get; set; } = new List<LandJoinResponse>();
+        public required List<LandJoinResponse?> Lands { get; set; } = new List<LandJoinResponse?>();
     }
 }

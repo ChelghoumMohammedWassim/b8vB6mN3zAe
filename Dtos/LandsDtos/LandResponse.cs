@@ -8,7 +8,7 @@ namespace b8vB6mN3zAe.Dtos
         public required string Name { get; set; }
         public required double Rainfall { get; set; }
 
-        public required FarmerJoinResponse Farmer { get; set; }
+        public required FarmerJoinResponse? Farmer { get; set; }
 
     }
 }

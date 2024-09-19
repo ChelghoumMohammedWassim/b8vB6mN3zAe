@@ -28,7 +28,7 @@ namespace b8vB6mN3zAe.Controllers
 
         [HttpGet]
         [Route("token")]
-        [Authorize(Roles = "Agronomist, Pedologist,  Admin")]
+        [Authorize(Roles = "Lab")]
         public async Task<IActionResult> GetUserInformationWithToken()
         {
             try
@@ -48,7 +48,7 @@ namespace b8vB6mN3zAe.Controllers
                     return NotFound("User Not Found.");
                 }
 
-                return Ok(dbLab.ToLabResponseDto());
+                return Ok(dbLab.ToLabJoinResponseDto());
             }
             catch (Exception)
             {
@@ -68,17 +68,16 @@ namespace b8vB6mN3zAe.Controllers
                 string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
 
                 //get user id
-                String requestUserID = Token.DecodeToken(accessToken, _SECRETKEY);
-                if (requestUserID is null)
+                if (accessUserId is null)
                 {
                     return Unauthorized("Invalid Authorization.");
                 }
+                
                 //select labs 
                 var labs = await _context.Labs
                 .Include(lab => lab.City)
                 .Include(lab => lab.Sectors)
                 .ThenInclude(sector => sector.Users)
-                // .Select(lab => lab.ToAdminLabsListResponseDto())
                 .ToListAsync();
 
                 List<Lab> accessedLabs = new List<Lab>();
@@ -103,7 +102,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
 
-                return Ok(accessedLabs.Select(lab => lab.ToLabResponseDto()));
+                return Ok(accessedLabs.Select(lab => lab.ToLabJoinResponseDto()));
             }
             catch (Exception)
             {
@@ -157,7 +156,7 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
 
-                return Ok(lab.ToLabResponseDto());
+                return Ok(lab.ToLabJoinResponseDto());
             }
             catch (Exception)
             {
