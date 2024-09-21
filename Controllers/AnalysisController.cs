@@ -2,6 +2,7 @@ using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
 using b8vB6mN3zAe.Models;
+using b8vB6mN3zAe.Models.Enums;
 using b8vB6mN3zAe.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -166,7 +167,7 @@ namespace b8vB6mN3zAe.Controllers
 
                 var accessibleAnalysis = analysis
                                         .Where(analyze => Utils.UserHaveAccess(analyze?.Sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context)
-                                        && analyze.Sample.Plot.ExploitationID ==exploitationID)
+                                        && analyze.Sample.Plot.ExploitationID == exploitationID)
                                         .Select(analyze => analyze.ToAnalysisResponseDto());
 
                 return Ok(accessibleAnalysis);
@@ -454,8 +455,8 @@ namespace b8vB6mN3zAe.Controllers
 
 
         [HttpDelete]
-        [Authorize(Roles = "Agronomist, Pedologist")]
-        public async Task<IActionResult> DeleteSample([FromHeader] string id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAnalyze([FromHeader] string id)
         {
             try
             {
@@ -499,6 +500,60 @@ namespace b8vB6mN3zAe.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok("Analyze Deleted.");
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+
+        }
+
+
+
+        [HttpPut]
+        [Route("status")]
+        [Authorize(Roles = "Agronomist, Pedologist")]
+        public async Task<IActionResult> UpdateAnalyzeStatus(AnalysisStatusUpdateRequest analysisStatusUpdateRequest)
+        {
+            try
+            {
+                //decode token to get user id
+                string accessToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("bearer ", "");
+                string accessUserId = Token.DecodeToken(accessToken, _SECRETKEY);
+
+                //check request structure
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid request structure.");
+                }
+
+
+                //get cities from db
+                var dbAnalyze = await _context.Analysis.
+                            FirstOrDefaultAsync(analyze => analyze.ID == analysisStatusUpdateRequest.AnalyzeID);
+
+                if (dbAnalyze is null)
+                {
+                    return NotFound("Analyze Not found");
+                }
+
+
+                if (!Utils.UserHaveAccess(dbAnalyze?.Sample?.Plot?.Exploitation?.Land?.Farmer?.ZipCode?.City?.Sector?.Users, accessUserId, _context))
+                {
+                    return Unauthorized("Invalid access token.");
+                }
+
+                if (analysisStatusUpdateRequest.AnalysisStatus == AnalysisStatus.Pending)
+                {
+                    return Unauthorized("User can't set analyze pending.");
+                }
+
+
+                dbAnalyze.Status = analysisStatusUpdateRequest.AnalysisStatus;
+                await _context.SaveChangesAsync();
+
+                return Ok("Analyze status updated.");
 
             }
             catch (Exception)

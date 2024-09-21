@@ -1,3 +1,4 @@
+using System.Drawing;
 using b8vB6mN3zAe.Database;
 using b8vB6mN3zAe.Dtos;
 using b8vB6mN3zAe.Mappers;
@@ -159,27 +160,40 @@ namespace b8vB6mN3zAe.Controllers
                 }
 
 
-                //get recommendation from db 
-                var dbRecommendation = await _context.Recommendations.
-                                            Include(r => r.RecommendedFertilizers)
-                                            .FirstOrDefaultAsync(r => r.ID == id);
+                var dbRecommendation = await _context.Recommendations
+                        .Include(r => r.RecommendedFertilizers)
+                        .Include(r => r.Analysis)
+                            .ThenInclude(a => a.Sample)
+                                .ThenInclude(s => s.Analyses)
+                                    .ThenInclude(a => a.Recommendations)
+                        .FirstOrDefaultAsync(r => r.ID == id);
 
                 if (dbRecommendation is null)
                 {
                     return NotFound("Recommendation Not found.");
                 }
 
-                if (dbRecommendation.UserID != accessUserId)
+                var recommendationsForSample = dbRecommendation?.Analysis?.Sample?.Analyses
+                                                .SelectMany(a => a.Recommendations)
+                                                .ToList();
+
+                if (dbRecommendation?.UserID != accessUserId)
                 {
                     return Unauthorized("User can't delete this recommendation.");
                 }
 
-                foreach (RecommendedFertilizer recommendedFertilizer in dbRecommendation.RecommendedFertilizers)
+                foreach (RecommendedFertilizer recommendedFertilizer in dbRecommendation!.RecommendedFertilizers)
                 {
                     _context.RecommendedFertilizers.Remove(recommendedFertilizer);
                 }
 
                 _context.Recommendations.Remove(dbRecommendation);
+
+                if (recommendationsForSample?.Count == 0)
+                {
+                    dbRecommendation!.Analysis!.Sample!.Status = SampleStatus.received;
+                }
+
                 await _context.SaveChangesAsync();
 
                 return Ok("Recommendation Deleted.");
